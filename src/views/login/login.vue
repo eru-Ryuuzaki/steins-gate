@@ -42,7 +42,7 @@
 import { rules } from './config/accout-config'
 
 export default {
-  name: 'login',
+  name: 'Login',
   data() {
     return {
       // 表单数据
