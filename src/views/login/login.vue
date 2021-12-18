@@ -84,7 +84,7 @@ export default {
   .account-control {
     display: flex;
     justify-content: space-between;
-    margin: 0px 10px 15px 10px;
+    margin-bottom: 15px;
   }
   .login-btn {
     width: 100%;
