@@ -3,6 +3,7 @@ import { BASE_URL, TIME_OUT } from './config'
 import { Message } from 'element-ui'
 import store from '../store/index'
 import router from '../router/index'
+import { Loading } from 'element-ui'
 
 // 创建基本请求
 function createHttp(options) {
@@ -27,12 +28,29 @@ function createHttp(options) {
       options.contentType || 'application/json; charset=UTF-8'
 
     config.headers.token = store.state.token || sessionStorage.getItem('token')
+
+    Loading.service({
+      lock: true,
+      text: '加载中......',
+      spinner: 'el-icon-loading',
+      background: 'rgba(0, 0, 0, 0.7)'
+    })
+
     return config
   })
+
+  // 这一块还有挺多没弄懂的
+  // res / errer 与 resolve / reject 的关系
 
   // 处理返回信息, 应该是配合 validateStatus 使用的
   instance.interceptors.response.use(
     (res) => {
+      this.$nextTick(() => {
+        // 以服务的方式调用的 Loading 需要异步关闭
+        // 因为是单例模式，所以这样就行了，虽然感觉不太好，但是暂时没想到别的方法
+        // 或者直接弄个实例挂在 vue 上？
+        Loading.service().close()
+      })
       const code = res.data.code
       if (code === 200) {
         // return Promise.resolve(res.data || {})
@@ -65,9 +83,14 @@ function createHttp(options) {
       }
     },
     (error) => {
+      this.$nextTick(() => {
+        // 以服务的方式调用的 Loading 需要异步关闭
+        Loading.service().close()
+      })
       // 调试用：打印响应失败原因
       console.log(error.response.message)
       // error 这里到时候返回的不是 promise 对象，所以 要加这个
+      // 该返回的数据则是axios.catch(err)中接收的数据
       return Promise.reject(error)
     }
   )
