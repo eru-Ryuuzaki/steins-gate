@@ -8,7 +8,11 @@ import {
   Checkbox,
   Link,
   Col,
-  Row
+  Row,
+  Aside,
+  Container,
+  Header,
+  Main
 } from 'element-ui'
 const components = [
   Button,
@@ -20,7 +24,11 @@ const components = [
   Checkbox,
   Link,
   Col,
-  Row
+  Row,
+  Aside,
+  Container,
+  Header,
+  Main
 ]
 export default function (app) {
   for (const component of components) {

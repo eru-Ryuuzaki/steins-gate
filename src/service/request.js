@@ -1,9 +1,8 @@
 import axios from 'axios'
 import { BASE_URL, TIME_OUT } from './config'
-import { Message } from 'element-ui'
+import { Message, Loading } from 'element-ui'
 import store from '../store/index'
 import router from '../router/index'
-import { Loading } from 'element-ui'
 
 // 创建基本请求
 function createHttp(options) {

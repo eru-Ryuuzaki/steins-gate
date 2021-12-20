@@ -6,18 +6,18 @@ module.exports = {
   runtimeCompiler: true,
   chainWebpack: (config) => {
     config.resolve.alias.set('@', resolve('src'))
-  }
+  },
   // 设置代理
-  // devServer: {
-  //   proxy: {
-  //     '/api': {
-  //       target: 'http://101.35.139.239:18201',
-  //       ws: true,
-  //       changeOrigin: true,
-  //       pathRewrite: {
-  //         '^/api': ''
-  //       }
-  //     }
-  //   }
-  // }
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://101.35.139.239:18201',
+        // ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
+  }
 }
