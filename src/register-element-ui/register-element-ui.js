@@ -12,7 +12,11 @@ import {
   Aside,
   Container,
   Header,
-  Main
+  Main,
+  Menu,
+  Submenu,
+  MenuItem,
+  MenuItemGroup
 } from 'element-ui'
 const components = [
   Button,
@@ -28,7 +32,11 @@ const components = [
   Aside,
   Container,
   Header,
-  Main
+  Main,
+  Menu,
+  Submenu,
+  MenuItem,
+  MenuItemGroup
 ]
 export default function (app) {
   for (const component of components) {

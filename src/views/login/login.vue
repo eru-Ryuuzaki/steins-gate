@@ -28,7 +28,10 @@
           <el-link type="primary">忘记密码</el-link>
         </div>
         <el-form-item>
-          <el-button type="primary" class="login-btn" @click="handleLoginClick"
+          <el-button
+            type="primary"
+            class="login-btn"
+            @click="handleLoginClick('accountForm')"
             >立即登录</el-button
           >
           <!-- <el-button type="primary">申请账号</el-button> -->
@@ -54,8 +57,25 @@ export default {
     }
   },
   methods: {
-    handleLoginClick() {
-      console.log('点击登录')
+    handleLoginClick(formName) {
+      // 获取 formName 对象并调用方法进行验证
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log('点击登录')
+          this.$post({
+            url: 'mall-admin/admin/login',
+            data: {
+              username: this.accountForm.name,
+              password: this.accountForm.pwd
+            }
+          }).then((res) => {
+            console.log(res)
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     }
   }
 }

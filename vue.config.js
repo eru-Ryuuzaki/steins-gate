@@ -9,15 +9,15 @@ module.exports = {
   },
   // 设置代理
   devServer: {
-    proxy: {
-      '/api': {
-        target: 'http://101.35.139.239:18201',
-        // ws: true,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': ''
-        }
-      }
-    }
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://101.35.139.239:18201',
+    //     // ws: true,
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       '^/api': ''
+    //     }
+    //   }
+    // }
   }
 }
