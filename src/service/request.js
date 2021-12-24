@@ -2,10 +2,12 @@ import axios from 'axios'
 import { BASE_URL, TIME_OUT } from './config'
 import { Message, Loading } from 'element-ui'
 import store from '../store/index'
-import router from '../router/index'
+// import router from '../router/index'
 
 // 创建基本请求
 function createHttp(options) {
+  // 为啥没配置 withCredentials 也跨域了。还是理解错了
+
   const instance = axios.create({
     baseURL: BASE_URL,
     timeout: TIME_OUT
@@ -34,7 +36,6 @@ function createHttp(options) {
       spinner: 'el-icon-loading',
       background: 'rgba(0, 0, 0, 0.7)'
     })
-    console.log('config', config)
     return config
   })
 
@@ -56,7 +57,7 @@ function createHttp(options) {
       if (code === 200) {
         // return Promise.resolve(res.data || {})
         // 到时候返回的时候回封装成 promise 对象
-        return res.data || {}
+        return res.data.data || {}
       } else if (code === 401) {
         Message({
           message: '身份过期，请重新登录',
@@ -64,8 +65,8 @@ function createHttp(options) {
           duration: 1000
         })
         // 保留最后停留的页面
-        store.state.lastRoute = router.currentRoute ? router.currentRoute : null
-        router.push('/login')
+        // store.state.lastRoute = router.currentRoute ? router.currentRoute : null
+        // router.push('/login')
         // .then(() => {
         //   return Promise.reject(res)
         // })

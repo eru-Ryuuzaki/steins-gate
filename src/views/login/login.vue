@@ -23,6 +23,7 @@
           </el-form-item>
         </el-row>
 
+        <!-- 待完善 -->
         <div class="account-control">
           <el-checkbox>记住密码</el-checkbox>
           <el-link type="primary">忘记密码</el-link>
@@ -70,6 +71,11 @@ export default {
             }
           }).then((res) => {
             console.log(res)
+            // 这里判断一下支不支持 localStrorage 好点。有时间再做
+            // 保存登录信息
+            localStorage.setItem('token', res.token)
+            localStorage.setItem('refreshToken', res.refreshToken)
+            localStorage.setItem('tokenHead', res.tokenHead)
           })
         } else {
           console.log('error submit!!')

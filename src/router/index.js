@@ -25,15 +25,16 @@ const router = new VueRouter({
 
 // 如果只有 router.beforeEach((to) => {}) 的话会渲染不出来的
 // router.beforeEach((to) => {
-// if (to.path !== '/login') {
-//   const token = localCache.getCache('token')
-//   if (!token) {
-//     return '/login'
+//   if (to.path === '/') {
+//     // 判断登录信息是否可用或者过期
+//     // 看是不是第一次的话就看 vuex 有没有就行了
+//     const refreshToken = localStorage.getItem('refreshToken')
+//     if (!refreshToken) {
+//       return '/login'
+//     } else {
+//     }
+//   } else if (to.path !== '/login') {
 //   }
-// }
-// if (to.path === '/main') {
-//   return firstMenu.url
-// }
 // })
 
 export default router

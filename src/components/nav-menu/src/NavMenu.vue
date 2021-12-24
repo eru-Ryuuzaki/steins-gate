@@ -4,12 +4,7 @@
       <img src="~@/assets/img/logo.svg" alt="logo" />
       <span class="title">Stains;Gate</span>
     </div>
-    <el-menu
-      default-active="2"
-      class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
-    >
+    <el-menu default-active="2" class="el-menu-vertical-demo">
       <el-submenu index="1">
         <template slot="title">
           <i class="el-icon-location"></i>
