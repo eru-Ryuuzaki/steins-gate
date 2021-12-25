@@ -1,9 +1,17 @@
+import { get } from '../../service/request'
 export default {
   // 这样写就能不用写 return 了是这个意思吧
   state: () => ({
     token: null,
     refreshToken: null,
-    tokenHead: null
+    tokenHead: null,
+
+    roleId: null,
+
+    menus: [],
+    icon: '', // 这里应该是默认头像
+    username: '该用户未设置昵称',
+    roles: []
   }),
   mutations: {
     setLoginInfo(state, res) {
@@ -14,14 +22,57 @@ export default {
       localStorage.setItem('token', res.token)
       localStorage.setItem('refreshToken', res.refreshToken)
       localStorage.setItem('tokenHead', res.tokenHead)
+    },
+
+    setUserInfo(state, res) {
+      state.menus = res.menus
+      state.icon = res.icon
+      state.username = res.username
+      state.roles = res.roles
+
+      // 存对象 先序列化
+      localStorage.setItem('menus', JSON.stringify(res.menus))
+      localStorage.setItem('icon', res.icon)
+      localStorage.setItem('username', res.username)
+      localStorage.setItem('roles', JSON.stringify(res.roles))
+    },
+
+    // 待补充
+    removeUserInfo() {}
+  },
+
+  // 进行异步操作
+  actions: {
+    // 获取角色信息
+    getUserInfo({ commit, state }) {
+      // 比较两者区别
+
+      // get({
+      //   url: '/mall-admin/admin/info'
+      // })
+      // .then((res) => {
+      //   console.log(res)
+      //   commit('setUserInfo', res)
+      //   return res
+      // })
+
+      return new Promise((resolve, reject) => {
+        get({
+          url: '/mall-admin/admin/info'
+        })
+          .then((res) => {
+            console.log(res)
+            commit('setUserInfo', res)
+            resolve()
+          })
+          .catch((error) => {
+            reject(error)
+          })
+      })
     }
   },
-  actions: {
-    // 进行异步操作
-
-    // 验证登录信息是否过期或者是否存在
-    loginVerify() {}
+  getters: {
+    roles: (state) => state.roles
   },
-  getters: {},
   namespaced: true
 }

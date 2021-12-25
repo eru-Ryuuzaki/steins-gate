@@ -11,6 +11,7 @@ function createHttp(options) {
   const instance = axios.create({
     baseURL: BASE_URL,
     timeout: TIME_OUT
+    // withCredentials: true  和 cookie 相关
   })
 
   // 感觉这里的没啥用，会被后面的覆盖
@@ -28,7 +29,10 @@ function createHttp(options) {
     config.headers['Content-Type'] =
       options.contentType || 'application/json; charset=UTF-8'
 
-    config.headers.token = store.state.token || sessionStorage.getItem('token')
+    const tokenHead = store.state.tokenHead || localStorage.getItem('tokenHead')
+    const token = store.state.token || localStorage.getItem('token')
+
+    config.headers.Authorization = tokenHead + token
 
     Loading.service({
       lock: true,
@@ -36,8 +40,16 @@ function createHttp(options) {
       spinner: 'el-icon-loading',
       background: 'rgba(0, 0, 0, 0.7)'
     })
+    // console.log('请求拦截', config)
     return config
   })
+
+  // 终于明白为啥 res 不需要用 promise 封装而 error 要了 ！！！
+  // promise 源码会给你答案
+  // then 在 promise 实例上
+  // 好像还不算特别理解
+  // 到时候去看看 axios 的 use 的 catch 那块
+  // 看和佳华的聊天记录
 
   // 处理返回信息, 应该是配合 validateStatus 使用的
   instance.interceptors.response.use(
@@ -53,6 +65,7 @@ function createHttp(options) {
         // 以服务的方式调用的 Loading 需要异步关闭
         Loading.service().close()
       }, 0)
+      // console.log('响应拦截', res)
       const code = res.data.code
       if (code === 200) {
         // return Promise.resolve(res.data || {})
@@ -90,8 +103,9 @@ function createHttp(options) {
         Loading.service().close()
       }, 0)
       // 调试用：打印响应失败原因
+      // console.log('响应拦截', error)
       console.log(error.response.message)
-      // error 这里到时候返回的不是 promise 对象，所以 要加这个
+      // error 这里到时候返回的不是 promise 对象，所以要加这个，到时候就可以 .then 了
       // 该返回的数据则是axios.catch(err)中接收的数据
       return Promise.reject(error)
     }
@@ -99,10 +113,13 @@ function createHttp(options) {
   return instance(options)
 }
 
-const post = (options) => createHttp(Object.assign(options, { method: 'POST' }))
-const get = (options) => createHttp(Object.assign(options, { method: 'GET' }))
-const put = (options) => createHttp(Object.assign(options, { method: 'PUT' }))
-const del = (options) =>
+export const post = (options) =>
+  createHttp(Object.assign(options, { method: 'POST' }))
+export const get = (options) =>
+  createHttp(Object.assign(options, { method: 'GET' }))
+export const put = (options) =>
+  createHttp(Object.assign(options, { method: 'PUT' }))
+export const del = (options) =>
   createHttp(Object.assign(options, { method: 'DELETE' }))
 
 export default {

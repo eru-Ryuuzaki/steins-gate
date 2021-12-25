@@ -44,6 +44,8 @@
 
 <script>
 import { rules } from './config/accout-config'
+import router from '../../router'
+// import { mapMutations } from 'vuex';
 
 export default {
   name: 'Login',
@@ -54,34 +56,65 @@ export default {
         name: '',
         pwd: ''
       },
-      rules: rules
+      rules: rules,
+
+      redirect: undefined, // 需要重定向的路径
+      otherQuery: undefined
+    }
+  },
+  // 第一次用
+  watch: {
+    $route: {
+      handler: function (route) {
+        const query = route.query
+        if (query) {
+          this.redirect = query.redirect
+          this.otherQuery = this.getOtherQuery(query)
+        }
+      },
+      // 需要在最初绑定值的时候也执行函数，则就需要用到immediate属性
+      immediate: true
     }
   },
   methods: {
+    // ...mapMutations(['login/setLoginInfo']),
     handleLoginClick(formName) {
       // 获取 formName 对象并调用方法进行验证
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log('点击登录')
           this.$post({
             url: 'mall-admin/admin/login',
             data: {
               username: this.accountForm.name,
               password: this.accountForm.pwd
             }
-          }).then((res) => {
-            console.log(res)
-            // 这里判断一下支不支持 localStrorage 好点。有时间再做
-            // 保存登录信息
-            localStorage.setItem('token', res.token)
-            localStorage.setItem('refreshToken', res.refreshToken)
-            localStorage.setItem('tokenHead', res.tokenHead)
           })
+            .then(async (res) => {
+              // this.$store.commit('login/setLoginInfo', res)
+              return this.$store.dispatch('login/getUserInfo')
+            })
+            .then(() => {
+              // router.push('/main')
+              router.push({
+                path: this.redirect || '/main',
+                query: this.otherQuery
+              })
+            })
         } else {
           console.log('error submit!!')
           return false
         }
       })
+    },
+
+    // 获取其他参数
+    getOtherQuery(query) {
+      return Object.keys(query).reduce((acc, cur) => {
+        if (cur !== 'redirect') {
+          acc[cur] = query[cur]
+        }
+        return acc
+      }, {})
     }
   }
 }

@@ -1,7 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '../store'
 
 Vue.use(VueRouter)
+
+// 免登陆页面 名单
+// const whiteList = ['/login', '/auth-redirect']
 
 const routes = [
   {
@@ -24,17 +28,30 @@ const router = new VueRouter({
 })
 
 // 如果只有 router.beforeEach((to) => {}) 的话会渲染不出来的
-// router.beforeEach((to) => {
-//   if (to.path === '/') {
-//     // 判断登录信息是否可用或者过期
-//     // 看是不是第一次的话就看 vuex 有没有就行了
-//     const refreshToken = localStorage.getItem('refreshToken')
-//     if (!refreshToken) {
-//       return '/login'
-//     } else {
-//     }
-//   } else if (to.path !== '/login') {
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  // const loginStore = store.state.login
+  // console.log(store)
+  if (to.path !== '/login') {
+    const token = localStorage.getItem('token')
+    // 判断是否存在登录信息
+    if (token) {
+      // 还没存
+      // console.log('bingo', store.getters['login/roles'])
+      const roles =
+        store.getters['login/roles'] && store.getters['login/roles'].length > 0
+      if (roles) {
+        next()
+      } else {
+        // 保留原本要去的路径
+        next({ path: `/login?redirect=${to.path}` })
+      }
+    } else {
+      // 把目前想要去的路径存在 url 到时候再取出来
+      next({ path: `/login?redirect=${to.path}` })
+    }
+  } else {
+    next()
+  }
+})
 
 export default router
