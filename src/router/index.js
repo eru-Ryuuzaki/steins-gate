@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 // 免登陆页面 名单
 // const whiteList = ['/login', '/auth-redirect']
 
-const routes = [
+export const constantRouterMap = [
   {
     path: '/main',
     name: '/main',
@@ -21,10 +21,12 @@ const routes = [
   { path: '/', redirect: 'main' }
 ]
 
+export const asyncRouterMap = []
+
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
+  routes: constantRouterMap
 })
 
 // 如果只有 router.beforeEach((to) => {}) 的话会渲染不出来的

@@ -1,4 +1,4 @@
-import { get } from '../../service/request'
+import { getUserInfo } from '@/api/login'
 export default {
   // 这样写就能不用写 return 了是这个意思吧
   state: () => ({
@@ -56,18 +56,8 @@ export default {
       //   return res
       // })
 
-      return new Promise((resolve, reject) => {
-        get({
-          url: '/mall-admin/admin/info'
-        })
-          .then((res) => {
-            console.log(res)
-            commit('setUserInfo', res)
-            resolve()
-          })
-          .catch((error) => {
-            reject(error)
-          })
+      return getUserInfo().then((res) => {
+        commit('setUserInfo', res)
       })
     }
   },
