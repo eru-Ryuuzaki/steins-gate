@@ -90,13 +90,13 @@ export default {
             }
           })
             .then(async (res) => {
-              // this.$store.commit('login/setLoginInfo', res)
+              this.$store.commit('login/setLoginInfo', res)
               return this.$store.dispatch('login/getUserInfo')
             })
             .then(() => {
               // router.push('/main')
               router.push({
-                path: this.redirect || '/main',
+                path: this.redirect || '/home',
                 query: this.otherQuery
               })
             })
