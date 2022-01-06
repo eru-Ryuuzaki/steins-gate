@@ -1,4 +1,4 @@
-let BASE_URL = '101.35.139.239:18201'
+let BASE_URL = '101.35.139.239:18080'
 const TIME_OUT = 10000
 
 if (process.env.NODE_ENV === 'development') {

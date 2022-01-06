@@ -96,7 +96,7 @@ export default {
             .then(() => {
               // router.push('/main')
               router.push({
-                path: this.redirect || '/main',
+                path: this.redirect || '/home',
                 query: this.otherQuery
               })
             })

@@ -5,12 +5,11 @@ import store from './store'
 
 import 'normalize.css/normalize.css'
 import './assets/css/index.less'
+import './assets/css/icon.css'
 
 // 按需引入组件
 import { registerUi } from './register-element-ui'
 import http from './service/request'
-
-Vue.config.productionTip = false
 
 Vue.use(registerUi)
 Vue.use(http)

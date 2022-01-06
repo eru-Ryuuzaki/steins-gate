@@ -16,7 +16,11 @@ import {
   Menu,
   Submenu,
   MenuItem,
-  MenuItemGroup
+  MenuItemGroup,
+  Breadcrumb,
+  BreadcrumbItem,
+  Tooltip,
+  Popover
 } from 'element-ui'
 const components = [
   Button,
@@ -36,7 +40,11 @@ const components = [
   Menu,
   Submenu,
   MenuItem,
-  MenuItemGroup
+  MenuItemGroup,
+  Breadcrumb,
+  BreadcrumbItem,
+  Tooltip,
+  Popover
 ]
 export default function (app) {
   for (const component of components) {

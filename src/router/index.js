@@ -16,7 +16,12 @@ export const constantRouterMap = [
   {
     path: '/login',
     name: '/login',
-    component: () => import('@/views/login/Login.vue')
+    component: () => import('@/views/login/login.vue')
+  },
+  {
+    path: '/home',
+    name: '/home',
+    component: () => import('@/views/home/Home.vue')
   },
   { path: '/', redirect: 'main' }
 ]
