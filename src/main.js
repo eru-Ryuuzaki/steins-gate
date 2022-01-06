@@ -11,8 +11,6 @@ import './assets/css/icon.css'
 import { registerUi } from './register-element-ui'
 import http from './service/request'
 
-Vue.config.productionTip = false
-
 Vue.use(registerUi)
 Vue.use(http)
 
