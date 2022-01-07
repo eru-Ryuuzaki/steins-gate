@@ -66,6 +66,7 @@ export default {
       return new Promise((resolve, reject) => {
         getUserInfo().then((res) => {
           commit('setUserInfo', res)
+          console.log(res.roles)
           resolve(res.roles)
         })
       })

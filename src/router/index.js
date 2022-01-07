@@ -19,14 +19,27 @@ export const constantRoutes = [
     component: () => import('@/views/login/login.vue')
   },
   {
+    path: '/404',
+    component: () => import('@/views/error-page/404'),
+    hidden: true
+  },
+  {
+    path: '/401',
+    component: () => import('@/views/error-page/401'),
+    hidden: true
+  },
+  { path: '/', redirect: '/home' }
+]
+
+export const asyncRoutes = [
+  {
     path: '/home',
     name: '/home',
     component: () => import('@/views/home/Home.vue')
   },
-  { path: '/', redirect: 'home' }
+  // 匹配不到的就跳到 404
+  { path: '*', redirect: '/404', hidden: true }
 ]
-
-export const asyncRoutes = []
 
 const router = new VueRouter({
   mode: 'history',
@@ -70,8 +83,9 @@ router.beforeEach(async (to, from, next) => {
 
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-          const { roles } = await store.dispatch('login/getUserInfo')
+          const roles = await store.dispatch('login/getUserInfo')
 
+          // console.log('准备动态添加路由啦', roles)
           // 把这个角色拥有的路由权限加上去
           const accessRoutes = await store.dispatch(
             'permission/generateRoutes',
@@ -80,11 +94,12 @@ router.beforeEach(async (to, from, next) => {
 
           // 动态添加路由
           router.addRoutes(accessRoutes)
-
+          // console.log(accessRoutes)
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true })
         } catch (error) {
+          // console.log('捕获到错误', error)
           // remove token and go to login page to re-login
           // await store.dispatch('user/resetToken')
           // Message.error(error || 'Has Error')
