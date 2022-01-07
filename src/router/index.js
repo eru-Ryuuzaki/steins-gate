@@ -5,9 +5,9 @@ import store from '../store'
 Vue.use(VueRouter)
 
 // 免登陆页面 名单
-// const whiteList = ['/login', '/auth-redirect']
+const whiteList = ['/login']
 
-export const constantRouterMap = [
+export const constantRoutes = [
   {
     path: '/main',
     name: '/main',
@@ -23,19 +23,33 @@ export const constantRouterMap = [
     name: '/home',
     component: () => import('@/views/home/Home.vue')
   },
-  { path: '/', redirect: 'main' }
+  { path: '/', redirect: 'home' }
 ]
 
-export const asyncRouterMap = []
+export const asyncRoutes = []
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes: constantRouterMap
+  routes: constantRoutes
 })
 
+// 重置路由（应该在切换用户时调用）
+const createRouter = () =>
+  new VueRouter({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes
+  })
+
+// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+export function resetRouter() {
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher // reset router  解决切换用户的问题
+}
+
 // 如果只有 router.beforeEach((to) => {}) 的话会渲染不出来的
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // const loginStore = store.state.login
   // console.log(store)
   if (to.path !== '/login') {
@@ -50,11 +64,43 @@ router.beforeEach((to, from, next) => {
         next()
       } else {
         // 保留原本要去的路径
-        next({ path: `/login?redirect=${to.path}` })
+        // next({ path: `/login?redirect=${to.path}` })
+        try {
+          // 什么时候会抛出错误呢？（√）
+
+          // get user info
+          // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
+          const { roles } = await store.dispatch('login/getUserInfo')
+
+          // 把这个角色拥有的路由权限加上去
+          const accessRoutes = await store.dispatch(
+            'permission/generateRoutes',
+            roles
+          )
+
+          // 动态添加路由
+          router.addRoutes(accessRoutes)
+
+          // hack method to ensure that addRoutes is complete
+          // set the replace: true, so the navigation will not leave a history record
+          next({ ...to, replace: true })
+        } catch (error) {
+          // remove token and go to login page to re-login
+          // await store.dispatch('user/resetToken')
+          // Message.error(error || 'Has Error')
+          next(`/login?redirect=${to.path}`)
+        }
       }
     } else {
       // 把目前想要去的路径存在 url 到时候再取出来
-      next({ path: `/login?redirect=${to.path}` })
+
+      if (whiteList.indexOf(to.path) !== -1) {
+        // in the free login whitelist, go directly
+        next()
+      } else {
+        // other pages that do not have permission to access are redirected to the login page.
+        next(`/login?redirect=${to.path}`)
+      }
     }
   } else {
     next()

@@ -19,6 +19,7 @@ export default {
       state.refreshToken = res.refreshToken
       state.tokenHead = res.tokenHead
       // 这里判断一下支不支持 localStrorage 好点。有时间再做
+      // 有时间做一下加密
       localStorage.setItem('token', res.token)
       localStorage.setItem('refreshToken', res.refreshToken)
       localStorage.setItem('tokenHead', res.tokenHead)
@@ -30,11 +31,11 @@ export default {
       state.username = res.username
       state.roles = res.roles
 
-      // 存对象 先序列化
-      localStorage.setItem('menus', JSON.stringify(res.menus))
-      localStorage.setItem('icon', res.icon)
-      localStorage.setItem('username', res.username)
-      localStorage.setItem('roles', JSON.stringify(res.roles))
+      // 存对象 先序列化(不存本地了)
+      // localStorage.setItem('menus', JSON.stringify(res.menus))
+      // localStorage.setItem('icon', res.icon)
+      // localStorage.setItem('username', res.username)
+      // localStorage.setItem('roles', JSON.stringify(res.roles))
     },
 
     // 待补充
@@ -56,8 +57,17 @@ export default {
       //   return res
       // })
 
-      return getUserInfo().then((res) => {
-        commit('setUserInfo', res)
+      // return getUserInfo().then((res) => {
+      //   commit('setUserInfo', res)
+      //   resolve(res.roles)
+      // })
+
+      // 要调用 resolve 的话要先 new Promise
+      return new Promise((resolve, reject) => {
+        getUserInfo().then((res) => {
+          commit('setUserInfo', res)
+          resolve(res.roles)
+        })
       })
     }
   },
