@@ -9,6 +9,7 @@
               v-model="accountForm.name"
               prefix-icon="el-icon-user-solid"
               placeholder="请输入账号"
+              @input="getLocalPWD(accountForm.name)"
             ></el-input>
           </el-form-item>
         </el-row>
@@ -25,7 +26,7 @@
 
         <!-- 待完善 -->
         <div class="account-control">
-          <el-checkbox>记住密码</el-checkbox>
+          <el-checkbox v-model="rememberPWD">记住密码</el-checkbox>
           <el-link type="primary">忘记密码</el-link>
         </div>
         <el-form-item>
@@ -45,6 +46,7 @@
 <script>
 import { rules } from './config/accout-config'
 import router from '../../router'
+import { debounce } from '../../utils/debounce'
 // import { mapMutations } from 'vuex';
 
 export default {
@@ -59,7 +61,9 @@ export default {
       rules: rules,
 
       redirect: undefined, // 需要重定向的路径
-      otherQuery: undefined
+      otherQuery: undefined,
+
+      rememberPWD: true // 是否需要记住密码
     }
   },
   // 第一次用
@@ -90,6 +94,10 @@ export default {
             }
           })
             .then(async (res) => {
+              // 记住密码
+              if (this.rememberPWD) {
+                this.savaPassWord(this.accountForm.name, this.accountForm.pwd)
+              }
               this.$store.commit('login/setLoginInfo', res)
               // return this.$store.dispatch('login/getUserInfo')
             })
@@ -106,6 +114,31 @@ export default {
         }
       })
     },
+
+    // 记住密码
+    savaPassWord(name, pwd) {
+      // 有空弄一下加密
+      let obj = JSON.parse(localStorage.getItem('account_pwd'))
+
+      if (!obj) {
+        obj = {}
+      }
+
+      obj[name] = pwd
+
+      localStorage.setItem('account_pwd', JSON.stringify(obj))
+    },
+
+    // 如果输入的账号设置了记住密码，那么输入账号后就自动输入密码
+    getLocalPWD: debounce(function (value) {
+      console.log(value)
+      const obj = JSON.parse(localStorage.getItem('account_pwd'))
+      if (obj && obj[value]) {
+        this.accountForm.pwd = obj[value]
+      } else {
+        this.accountForm.pwd = null
+      }
+    }),
 
     // 获取其他参数
     getOtherQuery(query) {

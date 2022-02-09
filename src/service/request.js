@@ -89,12 +89,14 @@ function createHttp(options) {
           type: 'error',
           duration: 1000
         })
+        return Promise.reject(res)
       } else {
         Message({
           message: '未知错误',
           type: 'error',
           duration: 1000
         })
+        return Promise.reject(res)
       }
     },
     (error) => {

@@ -241,6 +241,7 @@ export default {
     getHomeInfo().then((res) => {
       if (res) {
         this.homeMenuInfo = res
+        console.log(this.homeMenuInfo)
       } else {
         Message({
           message: '请求数据失败，请重新登录',
@@ -454,12 +455,12 @@ export default {
   }
 }
 
-/deep/.el-card__header,
-/deep/.el-card__body {
+/deep/ .el-card__header,
+/deep/ .el-card__body {
   padding: 0;
 }
 
-/deep/.el-card__header {
+/deep/ .el-card__header {
   background-color: #f2f6fc;
 }
 

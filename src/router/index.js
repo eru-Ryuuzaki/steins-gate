@@ -37,6 +37,27 @@ export const asyncRoutes = [
     name: '/home',
     component: () => import('@/views/home/Home.vue')
   },
+  {
+    path: './pms',
+    name: './pms',
+    component: () => import('@/views/pms/PMS.vue'),
+    children: [
+      {
+        // 当 /user/:id/profile 匹配成功，
+        // UserProfile 会被渲染在 User 的 <router-view> 中
+        path: '/product',
+        name: '/product',
+        component: () => import('@/views/pms/product/Product.vue')
+      },
+      {
+        // 当 /user/:id/posts 匹配成功
+        // UserPosts 会被渲染在 User 的 <router-view> 中
+        path: 'addProduct',
+        name: '/addProduct',
+        component: () => import('@/views/pms/addProduct/AddProduct.vue')
+      }
+    ]
+  },
   // 匹配不到的就跳到 404
   { path: '*', redirect: '/404', hidden: true }
 ]
@@ -65,6 +86,7 @@ export function resetRouter() {
 router.beforeEach(async (to, from, next) => {
   // const loginStore = store.state.login
   // console.log(store)
+  // console.log(to.path)
   if (to.path !== '/login') {
     const token = localStorage.getItem('token')
     // 判断是否存在登录信息
