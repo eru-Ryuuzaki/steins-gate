@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store'
+import Layout from '@/layout'
 
 Vue.use(VueRouter)
 
@@ -8,6 +9,33 @@ Vue.use(VueRouter)
 const whiteList = ['/login']
 
 export const constantRoutes = [
+  {
+    /*
+    在配置文件里以冒号的形式设置参数。我们在/src/router/index.js文件里配置路由。
+    {
+      path:'/params/:newsId/:newsTitle',
+      component:Params
+    }
+    <router-link  to="/params/198/jspang"> params</router-link>
+    接收参数
+    {{ $route.params.newsId}}
+    {{ $route.params.newsTitle}}
+    */
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index')
+      }
+    ]
+  },
+  {
+    path: '/test',
+    component: Layout,
+    hidden: true
+  },
   {
     path: '/main',
     name: '/main',

@@ -1,7 +1,11 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
+      <!-- include - 字符串或正则表达式。只有名称匹配的组件会被缓存。
+          exclude - 字符串或正则表达式。任何名称匹配的组件都不会被缓存。
+          max - 数字。最多可以缓存多少组件实例。 -->
       <keep-alive :include="cachedViews">
+        <!-- 这里的 key 作用： 保证路由切换时都会重新渲染触发钩子了。这样简单的多了 -->
         <router-view :key="key" />
       </keep-alive>
     </transition>
@@ -16,6 +20,7 @@ export default {
       return this.$store.state.tagsView.cachedViews
     },
     key() {
+      // 只要保证 key 唯一性就可以了，保证不同页面的 key 不相同
       return this.$route.path
     }
   }
@@ -31,7 +36,7 @@ export default {
   overflow: hidden;
 }
 
-.fixed-header+.app-main {
+.fixed-header + .app-main {
   padding-top: 50px;
 }
 
@@ -41,7 +46,7 @@ export default {
     min-height: calc(100vh - 84px);
   }
 
-  .fixed-header+.app-main {
+  .fixed-header + .app-main {
     padding-top: 84px;
   }
 }

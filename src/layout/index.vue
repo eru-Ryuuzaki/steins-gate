@@ -29,6 +29,7 @@ export default {
     Sidebar,
     TagsView
   },
+  // ResizeMixin 里面有一些周期函数，相当于复用了
   mixins: [ResizeMixin],
   computed: {
     // 这些存在 vuex 中应该是为了页面跳转还能保持之前的状态
