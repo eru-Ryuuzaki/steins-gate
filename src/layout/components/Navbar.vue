@@ -25,7 +25,10 @@
         trigger="click"
       >
         <div class="avatar-wrapper">
-          <img :src="avatar + '?imageView2/1/w/80/h/80'" class="user-avatar" />
+          <img
+            src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F9d661e2082283740bea419aa23d2583f5ccb05e3599e-3Vt8j1_sq235&refer=http%3A%2F%2Fhbimg.b0.upaiyun.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1647147876&t=88d815e52f0ce9a70090df6151dc95b6"
+            class="user-avatar"
+          />
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -73,7 +76,7 @@ export default {
     Search
   },
   computed: {
-    ...mapGetters(['sidebar', 'avatar', 'device'])
+    ...mapGetters(['sidebar', 'device'])
   },
   methods: {
     toggleSideBar() {

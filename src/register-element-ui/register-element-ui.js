@@ -20,8 +20,12 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Tooltip,
-  Popover
+  Popover,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
 } from 'element-ui'
+import ElScrollbar from 'element-ui/lib/scrollbar'
 const components = [
   Button,
   Select,
@@ -44,7 +48,11 @@ const components = [
   Breadcrumb,
   BreadcrumbItem,
   Tooltip,
-  Popover
+  Popover,
+  ElScrollbar,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
 ]
 export default function (app) {
   for (const component of components) {
