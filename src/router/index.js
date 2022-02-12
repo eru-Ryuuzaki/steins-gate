@@ -32,16 +32,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/test',
-    component: Layout,
-    hidden: true
-  },
-  {
-    path: '/main',
-    name: '/main',
-    component: () => import('@/views/main/Main.vue')
-  },
-  {
     path: '/login',
     name: '/login',
     component: () => import('@/views/login/login.vue')
@@ -56,22 +46,29 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
-  { path: '/', redirect: '/home' }
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/home',
+    children: [
+      {
+        path: 'home',
+        component: () => import('@/views/home/index'),
+        name: 'home',
+        meta: { title: '首页', icon: 'home', affix: true }
+      }
+    ]
+  }
+  // { path: '/', redirect: '/home' }
 ]
 
 export const asyncRoutes = [
   {
-    path: '/home',
-    name: '/home',
-    component: () => import('@/views/home/Home.vue')
-  },
-  {
     path: '/pms',
-    name: '/pms',
+    name: 'pms',
     redirect: '/pms/product',
-    meta: { title: 'pms', icon: 'icon', noCache: true },
+    meta: { title: '商品管理', icon: 'icon', noCache: true },
     component: Layout,
-    // component: () => import('@/views/pms/PMS.vue'),
     children: [
       {
         // 当 /user/:id/profile 匹配成功，
@@ -79,15 +76,64 @@ export const asyncRoutes = [
         path: 'product',
         component: () => import('@/views/pms/Product.vue'),
         name: 'product',
-        meta: { title: 'product', icon: 'icon', noCache: true }
+        meta: { title: '商品列表', icon: 'icon', noCache: true }
       },
       {
-        // 当 /user/:id/posts 匹配成功
-        // UserPosts 会被渲染在 User 的 <router-view> 中
-        path: 'addProduct',
-        name: '/addProduct',
+        path: 'add-product',
+        name: 'add-product',
         component: () => import('@/views/pms/AddProduct.vue'),
-        meta: { title: 'addProduct', icon: 'icon', noCache: true }
+        meta: { title: '添加商品', icon: 'icon', noCache: true }
+      },
+      {
+        path: 'brand-management',
+        name: 'brand-management',
+        component: () => import('@/views/pms/BrandManagement.vue'),
+        meta: { title: '品牌管理', icon: 'icon', noCache: true }
+      },
+      {
+        path: 'product-classification',
+        name: 'product-classification',
+        component: () => import('@/views/pms/ProductClassification.vue'),
+        meta: { title: '商品分类', icon: 'icon', noCache: true }
+      },
+      {
+        path: 'product-category',
+        name: 'product-category',
+        component: () => import('@/views/pms/ProductCategory.vue'),
+        meta: { title: '商品类型', icon: 'icon', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/permission',
+    name: 'permission',
+    redirect: '/permission/user-list',
+    meta: { title: '权限管理', icon: 'icon', noCache: true },
+    component: Layout,
+    children: [
+      {
+        path: 'meun-list',
+        component: () => import('@/views/permission/MenuList.vue'),
+        name: 'meun-list',
+        meta: { title: '菜单列表', icon: 'icon', noCache: true }
+      },
+      {
+        path: 'user-list',
+        name: 'user-list',
+        component: () => import('@/views/permission/UserList.vue'),
+        meta: { title: '用户列表', icon: 'icon', noCache: true }
+      },
+      {
+        path: 'role-list',
+        name: 'role-list',
+        component: () => import('@/views/permission/RoleList.vue'),
+        meta: { title: '角色列表', icon: 'icon', noCache: true }
+      },
+      {
+        path: 'source-list',
+        name: 'source-list',
+        component: () => import('@/views/permission/SourceList.vue'),
+        meta: { title: '资源列表', icon: 'icon', noCache: true }
       }
     ]
   },
