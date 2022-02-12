@@ -7,11 +7,12 @@ Vue.use(VueRouter)
 // 免登陆页面 名单
 const whiteList = ['/login']
 
+// 所有用户通用路由权限
 export const constantRoutes = [
   {
-    path: '/main',
-    name: '/main',
-    component: () => import('@/views/main/Main.vue')
+    path: '/home',
+    name: '/home',
+    component: () => import('@/views/home/Home.vue')
   },
   {
     path: '/login',
