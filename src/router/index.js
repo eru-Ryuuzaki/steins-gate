@@ -66,23 +66,28 @@ export const asyncRoutes = [
     component: () => import('@/views/home/Home.vue')
   },
   {
-    path: './pms',
-    name: './pms',
-    component: () => import('@/views/pms/PMS.vue'),
+    path: '/pms',
+    name: '/pms',
+    redirect: '/pms/product',
+    meta: { title: 'pms', icon: 'icon', noCache: true },
+    component: Layout,
+    // component: () => import('@/views/pms/PMS.vue'),
     children: [
       {
         // 当 /user/:id/profile 匹配成功，
         // UserProfile 会被渲染在 User 的 <router-view> 中
-        path: '/product',
-        name: '/product',
-        component: () => import('@/views/pms/product/Product.vue')
+        path: 'product',
+        component: () => import('@/views/pms/Product.vue'),
+        name: 'product',
+        meta: { title: 'product', icon: 'icon', noCache: true }
       },
       {
         // 当 /user/:id/posts 匹配成功
         // UserPosts 会被渲染在 User 的 <router-view> 中
         path: 'addProduct',
         name: '/addProduct',
-        component: () => import('@/views/pms/addProduct/AddProduct.vue')
+        component: () => import('@/views/pms/AddProduct.vue'),
+        meta: { title: 'addProduct', icon: 'icon', noCache: true }
       }
     ]
   },
