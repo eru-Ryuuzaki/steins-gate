@@ -27,7 +27,8 @@ import {
   Table,
   TableColumn,
   Option,
-  Pagination
+  Pagination,
+  Cascader
 } from 'element-ui'
 import ElScrollbar from 'element-ui/lib/scrollbar'
 const components = [
@@ -60,7 +61,8 @@ const components = [
   Table,
   TableColumn,
   Option,
-  Pagination
+  Pagination,
+  Cascader
 ]
 export default function (app) {
   for (const component of components) {
