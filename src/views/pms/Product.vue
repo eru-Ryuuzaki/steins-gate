@@ -104,18 +104,63 @@
 
       <el-table
         ref="multipleTable"
-        :data="tableData"
+        :data="productList"
         tooltip-effect="dark"
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column label="日期" width="120">
+        <!-- <el-table-column label="日期" width="120">
           <template slot-scope="scope">{{ scope.row.date }}</template>
+        </el-table-column> -->
+        <el-table-column prop="id" label="编号" width="50"> </el-table-column>
+        <el-table-column label="商品图片" width="120">
+          <template slot-scope="scope">
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="scope.row.pic"
+              fit="contain "
+            ></el-image>
+          </template>
         </el-table-column>
-        <el-table-column prop="name" label="姓名" width="120">
+        <el-table-column label="商品名称" width="120">
+          <template slot-scope="scope">
+            <div>{{ scope.row.name }}</div>
+            <div>品牌：{{ scope.row.brandName }}</div>
+          </template>
         </el-table-column>
-        <el-table-column prop="address" label="地址" show-overflow-tooltip>
+        <el-table-column label="价格/货号" width="120">
+          <template slot-scope="scope">
+            <div>价格：{{ scope.row.price }}</div>
+            <div>货号：{{ scope.row.productSn }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="verifyStatus" label="标签" width="120">
+          <template slot-scope="scope">
+            <div>
+              上架：<el-switch v-model="scope.row.verifyStatus"> </el-switch>
+            </div>
+            <div>
+              新品：<el-switch v-model="scope.row.newStatus"> </el-switch>
+            </div>
+            <div>
+              推荐：<el-switch v-model="scope.row.recommendStatus"> </el-switch>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="sort" label="排序" width="50"> </el-table-column>
+        <el-table-column prop="stock" label="SKU库存" width="90">
+        </el-table-column>
+        <el-table-column prop="sale" label="销量" width="80"> </el-table-column>
+        <el-table-column prop="verifyStatus" label="审核状态" width="120">
+        </el-table-column>
+        <el-table-column label="操作" width="180">
+          <template>
+            <el-button size="small">查看</el-button>
+            <el-button size="small">编辑</el-button>
+            <el-button size="small">日志</el-button>
+            <el-button type="danger" size="small">删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
 
@@ -124,7 +169,7 @@
           <span>批量操作</span>
           <el-select v-model="value" placeholder="请选择">
             <el-option
-              v-for="item in options"
+              v-for="item in []"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -137,11 +182,11 @@
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
-            :current-page="currentPage4"
-            :page-sizes="[100, 200, 300, 400]"
-            :page-size="100"
+            :current-page="productCondition.pageNum"
+            :page-sizes="[5, 10, 15, 20, 50]"
+            :page-size="productCondition.pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="400"
+            :total="totalNum"
           >
           </el-pagination>
         </el-col>
@@ -151,6 +196,8 @@
 </template>
 
 <script>
+import router from '../../router'
+
 export default {
   data() {
     return {
@@ -189,71 +236,12 @@ export default {
         }
       ],
 
-      options: [
-        {
-          value: '选项1',
-          label: '黄金糕'
-        },
-        {
-          value: '选项2',
-          label: '双皮奶'
-        },
-        {
-          value: '选项3',
-          label: '蚵仔煎'
-        },
-        {
-          value: '选项4',
-          label: '龙须面'
-        },
-        {
-          value: '选项5',
-          label: '北京烤鸭'
-        }
-      ],
+      // 货品 table 列表
+      productList: [],
+      totalNum: 0,
+
       value: '',
-      tableData: [
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }
-      ],
-      multipleSelection: [],
-      currentPage1: 5,
-      currentPage2: 5,
-      currentPage3: 5,
-      currentPage4: 4
+      multipleSelection: []
     }
   },
   methods: {
@@ -278,6 +266,8 @@ export default {
       this.$get({
         url
       }).then((res) => {
+        this.productList = res.list
+        this.totalNum = res.total
         console.log(res)
       })
     },
@@ -294,17 +284,23 @@ export default {
     },
 
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      this.productCondition.pageNum = 1
+      this.searchProduct()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      this.productCondition.pageNum = val
+      this.searchProduct()
     },
 
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
+
+    // 跳转到增加商品页面
     addProduct() {
-      console.log('addProduct')
+      router.push({
+        path: '/pms/add-product'
+      })
     },
     onSubmit() {
       console.log('onSubmit')
