@@ -2,7 +2,7 @@ import axios from 'axios'
 import { BASE_URL, TIME_OUT } from './config'
 import { Message, Loading } from 'element-ui'
 import store from '../store/index'
-// import router from '../router/index'
+import router from '../router'
 
 // 创建基本请求
 function createHttp(options) {
@@ -29,6 +29,7 @@ function createHttp(options) {
     config.headers['Content-Type'] =
       options.contentType || 'application/json; charset=UTF-8'
 
+    // 如果这样取的话，那存在 vuex 还有什么意义？
     const tokenHead = store.state.tokenHead || localStorage.getItem('tokenHead')
     const token = store.state.token || localStorage.getItem('token')
 
@@ -40,7 +41,7 @@ function createHttp(options) {
       spinner: 'el-icon-loading',
       background: 'rgba(0, 0, 0, 0.7)'
     })
-    // console.log('请求拦截', config)
+    console.log('请求拦截', config)
     return config
   })
 
@@ -53,7 +54,7 @@ function createHttp(options) {
 
   // 处理返回信息, 应该是配合 validateStatus 使用的
   instance.interceptors.response.use(
-    (res) => {
+    async (res) => {
       // this.$nextTick(() => {
       //   // 以服务的方式调用的 Loading 需要异步关闭
       //   // 因为是单例模式，所以这样就行了，虽然感觉不太好，但是暂时没想到别的方法
@@ -72,11 +73,28 @@ function createHttp(options) {
         // 到时候返回的时候回封装成 promise 对象
         return res.data.data || {}
       } else if (code === 401) {
+        // 应该清空用户状态（token之类的）
+        // console.log('过期信息', res)
+        const refreshToken = localStorage.getItem('refreshToken')
+        store.commit('login/removeUserInfo')
+        if (refreshToken) {
+          await store.dispatch('login/getNewToken', refreshToken)
+          await store.dispatch('login/getUserInfo')
+          // 刷新路由，保持原本的操作
+          // 这样获取路由不知道符不符合规范
+          const fullPath = window.location.pathname
+          router.replace({
+            path: '/redirect' + fullPath
+          })
+          return Promise.reject(new Error('正在刷新token'))
+        }
         Message({
           message: '身份过期，请重新登录',
           type: 'error',
           duration: 1000
         })
+        router.push('/login')
+        return Promise.reject(res.data.code)
         // 保留最后停留的页面
         // store.state.lastRoute = router.currentRoute ? router.currentRoute : null
         // router.push('/login')
