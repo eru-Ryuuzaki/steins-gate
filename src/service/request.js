@@ -28,7 +28,6 @@ function createHttp(options) {
     // 这个必须配置吗？
     config.headers['Content-Type'] =
       options.contentType || 'application/json; charset=UTF-8'
-
     // 如果这样取的话，那存在 vuex 还有什么意义？
     const tokenHead = store.state.tokenHead || localStorage.getItem('tokenHead')
     const token = store.state.token || localStorage.getItem('token')
@@ -41,7 +40,7 @@ function createHttp(options) {
       spinner: 'el-icon-loading',
       background: 'rgba(0, 0, 0, 0.7)'
     })
-    console.log('请求拦截', config)
+    // console.log('请求拦截', config)
     return config
   })
 
@@ -77,24 +76,35 @@ function createHttp(options) {
         // console.log('过期信息', res)
         const refreshToken = localStorage.getItem('refreshToken')
         store.commit('login/removeUserInfo')
-        if (refreshToken) {
-          await store.dispatch('login/getNewToken', refreshToken)
-          await store.dispatch('login/getUserInfo')
-          // 刷新路由，保持原本的操作
-          // 这样获取路由不知道符不符合规范
-          const fullPath = window.location.pathname
-          router.replace({
-            path: '/redirect' + fullPath
+
+        // 保存要去的路径，方便重定向
+        const fullPath = window.location.pathname
+
+        // 请求失败就进入 catch
+        try {
+          if (refreshToken) {
+            await store.dispatch('login/getNewToken', refreshToken)
+            await store.dispatch('login/getUserInfo')
+            // 刷新路由，保持原本的操作
+            // 这样获取路由不知道符不符合规范
+
+            router.replace({
+              path: '/redirect' + fullPath
+            })
+            return Promise.reject(new Error('正在刷新token'))
+          }
+          console.log('身份过期')
+          throw Error('refreshToken 失效')
+        } catch {
+          console.log('身份过期')
+          Message({
+            message: '身份过期，请重新登录',
+            type: 'error',
+            duration: 1000
           })
-          return Promise.reject(new Error('正在刷新token'))
+          router.push(`/login?redirect=${fullPath}`)
+          return Promise.reject(res.data.code)
         }
-        Message({
-          message: '身份过期，请重新登录',
-          type: 'error',
-          duration: 1000
-        })
-        router.push('/login')
-        return Promise.reject(res.data.code)
         // 保留最后停留的页面
         // store.state.lastRoute = router.currentRoute ? router.currentRoute : null
         // router.push('/login')
@@ -114,6 +124,7 @@ function createHttp(options) {
           type: 'error',
           duration: 1000
         })
+        console.log(res)
         return Promise.reject(res)
       }
     },

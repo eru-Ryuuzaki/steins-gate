@@ -12,9 +12,10 @@ export function getNewToken(refreshToken) {
   return Promise.resolve(
     post({
       url: '/mall-admin/admin/refreshToken',
-      data: {
+      params: {
         refreshToken
-      }
+      },
+      contentType: 'application/x-www-form-urlencoded'
     })
   )
 }
