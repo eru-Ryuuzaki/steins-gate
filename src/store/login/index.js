@@ -1,4 +1,4 @@
-import { getUserInfo } from '@/api/login'
+import { getUserInfo, getNewToken } from '@/api/login'
 export default {
   // 这样写就能不用写 return 了是这个意思吧
   state: () => ({
@@ -38,8 +38,30 @@ export default {
       // localStorage.setItem('roles', JSON.stringify(res.roles))
     },
 
-    // 待补充
-    removeUserInfo() {}
+    // 无感刷新token
+    resetToken(state, res) {
+      state.token = state.refreshToken || localStorage.getItem('refreshToken')
+      localStorage.setItem(
+        'token',
+        state.refreshToken || localStorage.getItem('refreshToken')
+      )
+      localStorage.removeItem('refreshToken')
+      console.log('清空 refreshToken')
+    },
+
+    // 清空用户信息
+    removeUserInfo(state) {
+      state.token = null
+      state.refreshToken = null
+      state.tokenHead = null
+      state.menus = null
+      state.icon = null
+      state.username = null
+      state.roles = null
+      localStorage.removeItem('token')
+      localStorage.removeItem('tokenHead')
+      localStorage.removeItem('refreshToken')
+    }
   },
 
   // 进行异步操作
@@ -65,10 +87,28 @@ export default {
       // 要调用 resolve 的话要先 new Promise
       return new Promise((resolve, reject) => {
         getUserInfo().then((res) => {
+          // console.log('执行到这里了', res)
           commit('setUserInfo', res)
-          // console.log(res.menus)
+          // console.log('拿到信息了')
           resolve(res.roles)
         })
+      })
+    },
+
+    getNewToken({ commit, state }, refreshToken) {
+      return new Promise((resolve, reject) => {
+        getNewToken(refreshToken).then(
+          (res) => {
+            console.log('获取新的token信息：', res)
+            commit('setLoginInfo', res)
+            resolve()
+          },
+          (err) => {
+            // refreshtoken 也不能用的情况
+            commit('removeUserInfo')
+            console.log(err)
+          }
+        )
       })
     }
   },

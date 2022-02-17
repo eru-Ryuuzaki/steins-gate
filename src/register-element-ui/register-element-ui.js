@@ -23,7 +23,14 @@ import {
   Popover,
   Dropdown,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  Table,
+  TableColumn,
+  Option,
+  Pagination,
+  Cascader,
+  Image,
+  Switch
 } from 'element-ui'
 import ElScrollbar from 'element-ui/lib/scrollbar'
 const components = [
@@ -52,7 +59,14 @@ const components = [
   ElScrollbar,
   Dropdown,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  Table,
+  TableColumn,
+  Option,
+  Pagination,
+  Cascader,
+  Image,
+  Switch
 ]
 export default function (app) {
   for (const component of components) {

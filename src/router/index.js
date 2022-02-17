@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store'
 import Layout from '@/layout'
+import { Message } from 'element-ui'
 
 Vue.use(VueRouter)
 
@@ -216,6 +217,11 @@ router.beforeEach(async (to, from, next) => {
         next()
       } else {
         // other pages that do not have permission to access are redirected to the login page.
+        Message({
+          message: '身份过期，请重新登录',
+          type: 'error',
+          duration: 1000
+        })
         next(`/login?redirect=${to.path}`)
       }
     }

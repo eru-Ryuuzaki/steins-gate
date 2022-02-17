@@ -99,7 +99,7 @@ export default {
                 this.savaPassWord(this.accountForm.name, this.accountForm.pwd)
               }
               this.$store.commit('login/setLoginInfo', res)
-              // return this.$store.dispatch('login/getUserInfo')
+              return this.$store.dispatch('login/getUserInfo')
             })
             .then(() => {
               // router.push('/home')
@@ -131,7 +131,6 @@ export default {
 
     // 如果输入的账号设置了记住密码，那么输入账号后就自动输入密码
     getLocalPWD: debounce(function (value) {
-      console.log(value)
       const obj = JSON.parse(localStorage.getItem('account_pwd'))
       if (obj && obj[value]) {
         this.accountForm.pwd = obj[value]
