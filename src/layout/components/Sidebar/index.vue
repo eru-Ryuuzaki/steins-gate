@@ -32,6 +32,7 @@ import variables from '@/styles/variables.scss'
 
 export default {
   components: { SidebarItem, Logo },
+  // components: { SidebarItem },
   computed: {
     ...mapGetters(['permission_routes', 'sidebar']),
     activeMenu() {
@@ -44,7 +45,8 @@ export default {
       return path
     },
     showLogo() {
-      return this.$store.state.settings.sidebarLogo
+      // return this.$store.state.settings.sidebarLogo // 暂时放着
+      return true
     },
     variables() {
       return variables
@@ -52,6 +54,8 @@ export default {
     isCollapse() {
       return !this.sidebar.opened
     }
-  }
+  },
+  methods: {},
+  mounted() {}
 }
 </script>

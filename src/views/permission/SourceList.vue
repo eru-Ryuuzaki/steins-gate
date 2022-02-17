@@ -1,9 +1,9 @@
 <template>
-  <div>Hello world!</div>
+  <div>sourcelist</div>
 </template>
 
 <script>
 export default {}
 </script>
 
-<style lang="less" scoped></style>
+<style lang="scss" scoped></style>
