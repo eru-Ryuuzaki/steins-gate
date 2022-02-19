@@ -30,9 +30,16 @@ import {
   Pagination,
   Cascader,
   Image,
-  Switch
+  Switch,
+  DatePicker,
+  MessageBox,
+  Message,
+  Steps,
+  Step,
+  Dialog
 } from 'element-ui'
 import ElScrollbar from 'element-ui/lib/scrollbar'
+import Vue from 'vue'
 const components = [
   Button,
   Select,
@@ -66,8 +73,14 @@ const components = [
   Pagination,
   Cascader,
   Image,
-  Switch
+  Switch,
+  DatePicker,
+  Steps,
+  Step,
+  Dialog
 ]
+Vue.prototype.$confirm = MessageBox.confirm
+Vue.prototype.$message = Message
 export default function (app) {
   for (const component of components) {
     app.component(component.name, component)

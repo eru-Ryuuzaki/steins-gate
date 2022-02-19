@@ -6,6 +6,7 @@ import permission from './permission'
 import getters from './getters'
 import errorLog from './errorLog'
 import tagsView from './tagsView'
+import oms from './oms'
 
 Vue.use(Vuex)
 
@@ -18,7 +19,8 @@ export default new Vuex.Store({
     permission,
     app,
     errorLog,
-    tagsView
+    tagsView,
+    oms
   },
   getters
 })
