@@ -107,6 +107,94 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/oms',
+    name: 'oms',
+    redirect: '/oms/order',
+    meta: { title: '订单', icon: 'order', noCache: true },
+    component: Layout,
+    children: [
+      {
+        path: 'order',
+        component: () => import('@/views/oms/Order.vue'),
+        name: 'order',
+        meta: { title: '订单列表', icon: 'product-list', noCache: true }
+      },
+      {
+        path: 'orderSetting',
+        component: () => import('@/views/oms/OrderSetting.vue'),
+        name: 'orderSetting',
+        meta: { title: '订单设置', icon: 'order-setting', noCache: true }
+      },
+      {
+        path: 'returnApply',
+        name: 'returnApply',
+        component: () => import('@/views/oms/ReturnApply.vue'),
+        meta: { title: '退货申请处理', icon: 'order-return', noCache: true }
+      },
+      {
+        path: 'returnReason',
+        name: 'returnReason',
+        component: () => import('@/views/oms/ReturnReason.vue'),
+        meta: {
+          title: '退货原因设置',
+          icon: 'order-return-reason',
+          noCache: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/sms',
+    name: 'sms',
+    redirect: '/sms/flash',
+    meta: { title: '营销', icon: 'sms', noCache: true },
+    component: Layout,
+    children: [
+      {
+        path: 'flash',
+        component: () => import('@/views/sms/Flash.vue'),
+        name: 'flash',
+        meta: { title: '秒杀活动列表', icon: 'sms-flash', noCache: true }
+      },
+      {
+        path: 'coupon',
+        component: () => import('@/views/sms/Coupon.vue'),
+        name: 'coupon',
+        meta: { title: '优惠券列表', icon: 'sms-coupon', noCache: true }
+      },
+      {
+        path: 'homeBrand',
+        name: 'homeBrand',
+        component: () => import('@/views/sms/HomeBrand.vue'),
+        meta: { title: '品牌推荐', icon: 'product-brand', noCache: true }
+      },
+      {
+        path: 'homeHot',
+        name: 'homeHot',
+        component: () => import('@/views/sms/HomeHot.vue'),
+        meta: { title: '新品推荐', icon: 'ms-new', noCache: true }
+      },
+      {
+        path: 'homeNew',
+        name: 'homeNew',
+        component: () => import('@/views/sms/HomeNew.vue'),
+        meta: { title: '人气推荐', icon: 'ms-hot', noCache: true }
+      },
+      {
+        path: 'homeSubject',
+        name: 'homeSubject',
+        component: () => import('@/views/sms/HomeSubject.vue'),
+        meta: { title: '专题推荐', icon: 'sms-subject', noCache: true }
+      },
+      {
+        path: 'homeAdvertise',
+        name: 'homeAdvertise',
+        component: () => import('@/views/sms/HomeAdvertise.vue'),
+        meta: { title: '广告列表', icon: 'sms-ad', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/permission',
     name: 'permission',
     redirect: '/permission/user-list',
