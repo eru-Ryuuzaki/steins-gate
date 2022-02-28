@@ -31,7 +31,7 @@ export default {
       this.$emit('search')
     },
     reset() {
-      this.$store.commit(`${this.curPath}/RESET_SEARCH`)
+      this.$emit('reset')
     }
   }
 }
