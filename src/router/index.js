@@ -300,7 +300,7 @@ router.beforeEach(async (to, from, next) => {
             'permission/generateRoutes',
             roles
           )
-
+          console.log(`动态路由: ${accessRoutes}`)
           // 动态添加路由
           router.addRoutes(accessRoutes)
           // console.log(accessRoutes)
