@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FilterSearch @search="handleOrderSearch">
+    <FilterSearch @search="handleOrderSearch" @reset="handleOrderReset">
       <SearchItem :title="'输入搜索: '">
         <el-input placeholder="订单编号" v-model="formParams.orderSn" clearable>
         </el-input>
@@ -239,6 +239,9 @@ export default {
     },
     handleOrderSearch() {
       this.getOrderList()
+      this.$store.commit('oms/RESET_SEARCH')
+    },
+    handleOrderReset() {
       this.$store.commit('oms/RESET_SEARCH')
     },
     handleBatchOperation(operation) {
