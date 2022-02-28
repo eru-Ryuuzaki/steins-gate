@@ -21,11 +21,6 @@
 <script>
 export default {
   name: 'index',
-  computed: {
-    curPath() {
-      return this.$route.path.split('/')[1]
-    }
-  },
   methods: {
     search() {
       this.$emit('search')

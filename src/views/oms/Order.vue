@@ -24,7 +24,7 @@
       <SearchItem :title="'订单分类: '">
         <el-select v-model="formParams.status" clearable placeholder="全部">
           <el-option
-            v-for="(item, index) in omsState.formItemContent.orderStatus"
+            v-for="(item, index) in formItemContent.orderStatus"
             :key="index"
             :label="item"
             :value="index"
@@ -35,7 +35,7 @@
       <SearchItem :title="'订单来源: '">
         <el-select v-model="formParams.orderType" clearable placeholder="全部">
           <el-option
-            v-for="(item, index) in omsState.formItemContent.orderTypes"
+            v-for="(item, index) in formItemContent.orderTypes"
             :key="index"
             :label="item"
             :value="index"
@@ -46,7 +46,7 @@
       <SearchItem :title="'订单状态: '">
         <el-select v-model="formParams.sourceType" clearable placeholder="全部">
           <el-option
-            v-for="(item, index) in omsState.formItemContent.sourceTypes"
+            v-for="(item, index) in formItemContent.sourceTypes"
             :key="index"
             :label="item"
             :value="index"
@@ -145,8 +145,10 @@
     </div>
     <BatchAndPaging
       @batchOperation="handleBatchOperation"
-      @pageSizeChange="getOrderList"
-      @pageNumChange="getOrderList"
+      @pageSizeChange="handlePageSizeChange"
+      @pageNumChange="handlePageNumChange"
+      :total="total"
+      :operations="operationTypes"
     />
     <el-dialog
       title="订单跟踪"
@@ -172,6 +174,21 @@
         </div>
       </span>
     </el-dialog>
+    <el-dialog title="关闭订单" :visible.sync="closeOrderVisible">
+      <el-input
+        type="textarea"
+        :rows="5"
+        placeholder="请输入内容"
+        v-model="note"
+      >
+      </el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeOrderVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleCloseOrderDialog"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -181,6 +198,13 @@ import SearchItem from '../../components/FilterSearch/SearchItem.vue'
 import BatchAndPaging from '../../components/BatchAndPaging'
 
 import { objectToQuery } from '../../utils/utils'
+import { getOrderList, deleteOrder, closeOrder } from '../../api/order'
+import {
+  orderTrack,
+  formItemContent,
+  operationTypes,
+  order
+} from './data/data-handle'
 
 export default {
   name: 'Order',
@@ -193,89 +217,81 @@ export default {
     return {
       orderList: [],
       selectOrder: [],
-      orderTrack: [
-        { title: '订单已提交，等待付款', time: '2017-04-01 12:00:00' },
-        { title: '订单付款成功', time: '2017-04-01 12:00:00' },
-        {
-          title: '在北京市进行下级地点扫描，等待付款',
-          time: '2017-04-01 12:00:00'
-        },
-        {
-          title: '在分拨中心广东深圳公司进行卸车扫描，等待付款',
-          time: '2017-04-01 12:00:00'
-        },
-        {
-          title: '到达目的地网点广东深圳公司，快件将很快进行派送',
-          time: '2017-04-01 12:00:00'
-        },
-        { title: '订单已签收，期待再次为您服务', time: '2017-04-01 12:00:00' }
-      ],
+      orderTrack,
       isVisible: false,
-      orderDeliveryList: {}
+      orderDeliveryList: {},
+      formParams: {
+        orderSn: '',
+        receiverKeyword: '',
+        createTime: '',
+        status: '',
+        orderType: '',
+        sourceType: '',
+        pageNum: 1,
+        pageSize: 10
+      },
+      total: 0,
+      totalPage: 0,
+      formItemContent,
+      operationTypes,
+      note: '',
+      closeOrderVisible: false,
+      waitToDeliver: []
     }
   },
   created() {
-    this.getOrderList()
+    this.getOrderListData()
   },
-  computed: {
-    omsState() {
-      return this.$store.state.oms
-    },
-    formParams() {
-      return this.$store.state.oms.formParams
-    }
-  },
+  computed: {},
   methods: {
-    async getOrderList() {
-      const { list, pageSize, pageNum, total, totalPage } = await this.$get({
-        url: `/mall-admin/order/list?${objectToQuery(this.omsState.formParams)}`
-      })
+    async getOrderListData() {
+      const query = objectToQuery(this.formParams)
+      const { list, pageSize, pageNum, total, totalPage } = await getOrderList(
+        query
+      )
       this.orderList = list
       this.formParams.pageSize = pageSize
       this.formParams.pageNum = pageNum
-      this.omsState.total = total
-      this.omsState.totalPage = totalPage
-      this.handleOrderList()
+      this.total = total
+      this.totalPage = totalPage
+      order.handleOrderList(this.orderList)
     },
     handleOrderSearch() {
-      this.getOrderList()
-      this.$store.commit('oms/RESET_SEARCH')
+      this.getOrderListData()
+      this.handleOrderReset()
     },
     handleOrderReset() {
-      this.$store.commit('oms/RESET_SEARCH')
+      Object.keys(this.formParams).forEach((key) => {
+        if (key !== 'pageNum' && key !== 'pageSize') {
+          this.formParams[key] = ''
+        }
+      })
     },
     handleBatchOperation(operation) {
-      console.log(operation)
+      if (operation === 0) {
+        this.waitToDeliver = []
+        this.selectOrder.forEach((id) => {
+          this.orderList.forEach((item) => {
+            if (item.status === '待发货' && item.id === id) {
+              this.waitToDeliver.push(item)
+            }
+          })
+        })
+        console.log(order.handleWaitToDeliver(this.waitToDeliver))
+        this.$router.push('/')
+      } else if (operation === 1) {
+        this.closeOrderVisible = true
+      } else if (operation === 2) {
+        this.open(this.selectOrder)
+      }
     },
-    handleOrderList() {
-      this.orderList.forEach((item) => {
-        if (item.payType === 0) {
-          item.payType = '未支付'
-        } else if (item.payType === 1) {
-          item.payType = '支付宝'
-        } else if (item.payType === 2) {
-          item.payType = '微信'
-        }
-        if (item.sourceType === 0) {
-          item.sourceType = 'PC订单'
-        } else if (item.sourceType === 1) {
-          item.sourceType = 'app订单'
-        }
-        if (item.status === 0) {
-          item.status = '待付款'
-        } else if (item.status === 1) {
-          item.status = '待发货'
-        } else if (item.status === 2) {
-          item.status = '已发货'
-        } else if (item.status === 3) {
-          item.status = '已完成'
-        } else if (item.status === 4) {
-          item.status = '已关闭'
-        } else if (item.status === 5) {
-          item.status = '无效订单'
-        }
-        item.createTime = item.createTime.replace('T', ' ')
-      })
+    handlePageSizeChange(pageSize) {
+      this.formParams.pageSize = pageSize
+      this.getOrderListData()
+    },
+    handlePageNumChange(pageNum) {
+      this.formParams.pageNum = pageNum
+      this.getOrderListData()
     },
     open(id) {
       this.$confirm('是否要进行该删除操作?', '提示', {
@@ -283,17 +299,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       })
-        .then(() => {
-          const index = this.selectOrder.indexOf(id)
-          if (index !== -1) {
-            this.selectOrder.splice(index, 1)
-          }
-          this.deleteOrder([id])
+        .then(async () => {
+          await deleteOrder([id])
+          await this.getOrderListData()
         })
         .catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除订单'
+            message: '已取消删除操作'
           })
         })
     },
@@ -302,10 +315,7 @@ export default {
       val.forEach((item) => {
         this.selectOrder.push(item.id)
       })
-      console.log(this.selectOrder)
     },
-    deleteOrder(orders) {},
-    closeOrder() {},
     orderDelivery(id) {
       const {
         orderSn,
@@ -331,6 +341,11 @@ export default {
         deliveryCompany,
         deliverySn
       )
+    },
+    async handleCloseOrderDialog() {
+      await closeOrder(this.selectOrder, this.note)
+      this.closeOrderVisible = false
+      await this.getOrderListData()
     }
   }
 }

@@ -24,7 +24,7 @@
             :page-sizes="[5, 10, 15]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="curState.total"
+            :total="total"
           >
           </el-pagination>
         </el-col>
@@ -36,22 +36,20 @@
 <script>
 export default {
   name: 'index',
+  props: {
+    total: {
+      type: Number
+    },
+    operations: {
+      type: Array
+    }
+  },
   data() {
     return {
       operation: '',
-      operationTypes: [],
+      operationTypes: this.operations,
       currentPage: 1,
       pageSize: 5
-    }
-  },
-  mounted() {
-    this.operationTypes = this.curState.operationTypes
-    this.currentPage = this.curState.formParams.pageNum
-    this.pageSize = this.curState.formParams.pageSize
-  },
-  computed: {
-    curState() {
-      return this.$store.state[this.$route.path.split('/')[1]]
     }
   },
   methods: {
@@ -59,12 +57,10 @@ export default {
       this.$emit('batchOperation', this.operation)
     },
     handleSizeChange(pageSize) {
-      this.curState.formParams.pageSize = pageSize
-      this.$emit('pageSizeChange')
+      this.$emit('pageSizeChange', pageSize)
     },
     handleCurrentChange(curPage) {
-      this.curState.formParams.pageNum = curPage
-      this.$emit('pageNumChange')
+      this.$emit('pageNumChange', curPage)
     }
   }
 }
