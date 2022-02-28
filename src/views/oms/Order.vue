@@ -120,7 +120,9 @@
         ></el-table-column>
         <el-table-column prop="status" label="操作" align="center" width="200">
           <template v-slot="scope">
-            <el-button size="small">查看订单</el-button>
+            <el-button size="small" @click="handleOrderDetail(scope.row.id)"
+              >查看订单</el-button
+            >
             <el-button
               v-if="scope.row.status === '已关闭'"
               size="small"
@@ -132,7 +134,7 @@
             <el-button
               v-else-if="scope.row.status === '待发货'"
               size="small"
-              @click="orderDelivery(scope.row.id)"
+              @click="orderDelivery([scope.row])"
             >
               订单发货
             </el-button>
@@ -228,7 +230,7 @@ export default {
         orderType: '',
         sourceType: '',
         pageNum: 1,
-        pageSize: 10
+        pageSize: 5
       },
       total: 0,
       totalPage: 0,
@@ -258,7 +260,6 @@ export default {
     },
     handleOrderSearch() {
       this.getOrderListData()
-      this.handleOrderReset()
     },
     handleOrderReset() {
       Object.keys(this.formParams).forEach((key) => {
@@ -277,12 +278,36 @@ export default {
             }
           })
         })
-        console.log(order.handleWaitToDeliver(this.waitToDeliver))
-        this.$router.push('/')
+        this.waitToDeliver = order.handleWaitToDeliver(this.waitToDeliver)
+        if (this.selectOrder.length === 0) {
+          this.warnMessage()
+        } else if (this.waitToDeliver.length === 0) {
+          this.$message({
+            type: 'warning',
+            message: '选中订单中没有可以发货的订单'
+          })
+        } else {
+          this.$router.push({
+            path: 'deliverOrderList',
+            query: {
+              list: this.waitToDeliver
+            }
+          })
+        }
       } else if (operation === 1) {
-        this.closeOrderVisible = true
+        if (!this.selectOrder.length) {
+          this.warnMessage()
+        } else {
+          this.closeOrderVisible = true
+        }
       } else if (operation === 2) {
-        this.open(this.selectOrder)
+        if (!this.selectOrder.length) {
+          this.warnMessage()
+        } else {
+          this.open(this.selectOrder)
+        }
+      } else {
+        this.warnMessage()
       }
     },
     handlePageSizeChange(pageSize) {
@@ -316,36 +341,31 @@ export default {
         this.selectOrder.push(item.id)
       })
     },
-    orderDelivery(id) {
-      const {
-        orderSn,
-        receiverName,
-        receiverPhone,
-        receiverPostCode,
-        receiverProvince,
-        receiverCity,
-        receiverRegion,
-        deliveryCompany,
-        deliverySn
-      } = this.orderList.filter((item) => item.id === id)[0]
-      this.orderDeliveryList.orderSn = orderSn
-      this.orderDeliveryList.receiverName = receiverName
-      console.log(
-        orderSn,
-        receiverName,
-        receiverPhone,
-        receiverPostCode,
-        receiverProvince,
-        receiverCity,
-        receiverRegion,
-        deliveryCompany,
-        deliverySn
-      )
+    orderDelivery(orderItem) {
+      orderItem = order.handleWaitToDeliver(orderItem)
+      this.$router.push({
+        path: 'deliverOrderList',
+        query: {
+          list: orderItem
+        }
+      })
     },
     async handleCloseOrderDialog() {
       await closeOrder(this.selectOrder, this.note)
       this.closeOrderVisible = false
       await this.getOrderListData()
+    },
+    handleOrderDetail(id) {
+      this.$router.push({
+        path: 'OrderDetail',
+        query: { id }
+      })
+    },
+    warnMessage() {
+      this.$message({
+        type: 'warning',
+        message: '请选择要操作的订单'
+      })
     }
   }
 }

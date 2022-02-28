@@ -47,7 +47,8 @@ class WaitToDeliverOrder {
     this.address =
       receiverProvince + receiverCity + receiverRegion + receiverDetailAddress
     this.deliverySn = deliverySn
-    this.accessoryMode = ['顺丰', '圆通', '中通', '韵达']
+    this.accessoryMode = ['顺丰快递', '圆通快递', '中通快递', '韵达快递']
+    this.deliveryCompany = ''
   }
 }
 
@@ -90,7 +91,7 @@ class Order {
     const orderListInfo = []
     list.forEach((item) => {
       const {
-        id,
+        orderSn,
         receiverName,
         receiverPhone,
         receiverPostCode,
@@ -101,7 +102,7 @@ class Order {
         deliverySn
       } = item
       const order = new WaitToDeliverOrder(
-        id,
+        orderSn,
         receiverName,
         receiverPhone,
         receiverPostCode,

@@ -24,4 +24,29 @@ function closeOrder(ids, note) {
   )
 }
 
-export { getOrderList, deleteOrder, closeOrder }
+function deliverOrder(orders) {
+  return Promise.resolve(
+    put({
+      url: '/mall-admin/order/delivery',
+      deliveryParamList: orders
+    })
+  )
+  // return Promise.resolve(
+  //   put({
+  //     url: '/mall-admin/order/delivery',
+  //     data: {
+  //       deliveryParamList: orders
+  //     }
+  //   })
+  // )
+}
+
+function orderDetail(id) {
+  return Promise.resolve(
+    get({
+      url: `/mall-admin/order/${id}`
+    })
+  )
+}
+
+export { getOrderList, deleteOrder, closeOrder, deliverOrder, orderDetail }

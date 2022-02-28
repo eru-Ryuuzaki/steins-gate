@@ -140,6 +140,24 @@ export const asyncRoutes = [
           icon: 'order-return-reason',
           noCache: true
         }
+      },
+      {
+        path: 'deliverOrderList',
+        name: 'deliverOrderList',
+        component: () => import('@/views/oms/DeliverOrderList.vue'),
+        meta: {
+          title: '发货列表',
+          noCache: true
+        }
+      },
+      {
+        path: 'orderDetail',
+        name: 'orderDetail',
+        component: () => import('@/views/oms/OrderDetail.vue'),
+        meta: {
+          title: '订单详情',
+          noCache: true
+        }
       }
     ]
   },
