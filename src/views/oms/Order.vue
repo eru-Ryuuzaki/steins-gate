@@ -24,7 +24,7 @@
       <SearchItem :title="'订单分类: '">
         <el-select v-model="formParams.status" clearable placeholder="全部">
           <el-option
-            v-for="(item, index) in formItemContent.orderStatus"
+            v-for="(item, index) in orderFormItemContent.orderStatus"
             :key="index"
             :label="item"
             :value="index"
@@ -35,7 +35,7 @@
       <SearchItem :title="'订单来源: '">
         <el-select v-model="formParams.orderType" clearable placeholder="全部">
           <el-option
-            v-for="(item, index) in formItemContent.orderTypes"
+            v-for="(item, index) in orderFormItemContent.orderTypes"
             :key="index"
             :label="item"
             :value="index"
@@ -46,7 +46,7 @@
       <SearchItem :title="'订单状态: '">
         <el-select v-model="formParams.sourceType" clearable placeholder="全部">
           <el-option
-            v-for="(item, index) in formItemContent.sourceTypes"
+            v-for="(item, index) in orderFormItemContent.sourceTypes"
             :key="index"
             :label="item"
             :value="index"
@@ -120,7 +120,9 @@
         ></el-table-column>
         <el-table-column prop="status" label="操作" align="center" width="200">
           <template v-slot="scope">
-            <el-button size="small" @click="handleOrderDetail(scope.row.id)"
+            <el-button
+              size="small"
+              @click="handleOrderDetail(scope.row.orderId)"
               >查看订单</el-button
             >
             <el-button
@@ -138,6 +140,13 @@
             >
               订单发货
             </el-button>
+            <el-button
+              v-else-if="scope.row.status === '待付款'"
+              size="small"
+              @click="handleCloseSingleOrder(scope.row.id)"
+            >
+              关闭订单
+            </el-button>
             <el-button v-else size="small" @click="isVisible = true">
               订单跟踪
             </el-button>
@@ -150,7 +159,7 @@
       @pageSizeChange="handlePageSizeChange"
       @pageNumChange="handlePageNumChange"
       :total="total"
-      :operations="operationTypes"
+      :operations="orderOperationTypes"
     />
     <el-dialog
       title="订单跟踪"
@@ -203,8 +212,8 @@ import { objectToQuery } from '../../utils/utils'
 import { getOrderList, deleteOrder, closeOrder } from '../../api/order'
 import {
   orderTrack,
-  formItemContent,
-  operationTypes,
+  orderFormItemContent,
+  orderOperationTypes,
   order
 } from './data/data-handle'
 
@@ -234,8 +243,8 @@ export default {
       },
       total: 0,
       totalPage: 0,
-      formItemContent,
-      operationTypes,
+      orderFormItemContent,
+      orderOperationTypes,
       note: '',
       closeOrderVisible: false,
       waitToDeliver: []
@@ -257,8 +266,10 @@ export default {
       this.total = total
       this.totalPage = totalPage
       order.handleOrderList(this.orderList)
+      console.log(this.orderList)
     },
     handleOrderSearch() {
+      console.log(this.formParams)
       this.getOrderListData()
     },
     handleOrderReset() {
@@ -278,6 +289,7 @@ export default {
             }
           })
         })
+
         this.waitToDeliver = order.handleWaitToDeliver(this.waitToDeliver)
         if (this.selectOrder.length === 0) {
           this.warnMessage()
@@ -301,6 +313,7 @@ export default {
           this.closeOrderVisible = true
         }
       } else if (operation === 2) {
+        // console.log(this.selectOrder)
         if (!this.selectOrder.length) {
           this.warnMessage()
         } else {
@@ -350,15 +363,23 @@ export default {
         }
       })
     },
-    async handleCloseOrderDialog() {
-      await closeOrder(this.selectOrder, this.note)
+    async handleCloseOrderDialog(id) {
+      if (id) {
+        await closeOrder([id], this.note)
+      } else {
+        await closeOrder(this.selectOrder, this.note)
+      }
       this.closeOrderVisible = false
       await this.getOrderListData()
     },
-    handleOrderDetail(id) {
+    handleCloseSingleOrder(id) {
+      this.closeOrderVisible = true
+      this.handleCloseOrderDialog(id)
+    },
+    handleOrderDetail(orderId) {
       this.$router.push({
         path: 'OrderDetail',
-        query: { id }
+        query: { orderId }
       })
     },
     warnMessage() {

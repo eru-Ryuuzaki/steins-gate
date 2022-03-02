@@ -93,7 +93,7 @@ export default {
   },
   created() {
     this.orders = this.$route.query.list
-    console.log(this.orders)
+    // console.log(this.orders)
   },
   methods: {
     cancel() {
@@ -124,14 +124,13 @@ export default {
       const orderInfo = []
       this.orders.forEach((item) => {
         const order = {
-          deliveryCompany: item.deliveryCompany,
+          deliveryCompany: item.accessoryMode[item.deliveryCompany],
           deliverySn: item.deliverySn,
           orderId: parseInt(item.id)
         }
         orderInfo.push(order)
       })
-      orderInfo[0].deliveryCompany = '中通快递'
-      console.log(orderInfo)
+      // 发送请求报错
       deliverOrder(orderInfo)
         .then((res) => {
           console.log(res)

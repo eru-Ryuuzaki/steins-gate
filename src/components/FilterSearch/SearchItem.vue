@@ -18,7 +18,6 @@ export default {
 
 <style>
 .el-form-item__label {
-  width: 128px;
   font-weight: 400;
 }
 .el-select .el-input__inner {

@@ -3,17 +3,25 @@
 </template>
 
 <script>
-// import { orderDetail } from '../../api/order'
+import { orderDetail } from '../../api/order'
 
 export default {
   name: 'OrderDetail',
   data() {
     return {
-      id: 0
+      orderId: parseInt(this.$route.query.orderId),
+      orderDetailInfo: {}
     }
   },
   created() {
-    console.log(this.$route.query)
+    this.getOrderDetailInfo()
+  },
+  methods: {
+    async getOrderDetailInfo() {
+      console.log(this.orderId)
+      this.orderDetailInfo = await orderDetail(this.orderId)
+      console.log(this.orderDetailInfo)
+    }
   }
 }
 </script>

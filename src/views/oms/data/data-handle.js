@@ -18,14 +18,19 @@ const orderTrack = [
 ]
 
 // 订单列表表单项可选的内容
-const formItemContent = {
+const orderFormItemContent = {
   orderStatus: ['待付款', '待发货', '已发货', '已完成', '已关闭'],
   orderTypes: ['正常订单', '秒杀订单'],
   sourceTypes: ['PC订单', 'app订单']
 }
 
+// 退货申请表单项可选的内容
+const returnApplyFormItemContent = {
+  returnApplyStatus: ['待处理', '退货中', '已完成', '已拒绝']
+}
+
 // 订单列表批量操作的内容
-const operationTypes = ['批量发货', '关闭订单', '删除订单']
+const orderOperationTypes = ['批量发货', '关闭订单', '删除订单']
 
 // 待发货订单数据
 class WaitToDeliverOrder {
@@ -56,32 +61,20 @@ class WaitToDeliverOrder {
 class Order {
   // 订单列表数据处理
   handleOrderList(orderList) {
+    const payType = ['未支付', '支付宝', '微信']
+    const sourceType = ['PC订单', 'app订单']
+    const status = [
+      '待付款',
+      '待发货',
+      '已发货',
+      '已完成',
+      '已关闭',
+      '无效订单'
+    ]
     orderList.forEach((item) => {
-      if (item.payType === 0) {
-        item.payType = '未支付'
-      } else if (item.payType === 1) {
-        item.payType = '支付宝'
-      } else if (item.payType === 2) {
-        item.payType = '微信'
-      }
-      if (item.sourceType === 0) {
-        item.sourceType = 'PC订单'
-      } else if (item.sourceType === 1) {
-        item.sourceType = 'app订单'
-      }
-      if (item.status === 0) {
-        item.status = '待付款'
-      } else if (item.status === 1) {
-        item.status = '待发货'
-      } else if (item.status === 2) {
-        item.status = '已发货'
-      } else if (item.status === 3) {
-        item.status = '已完成'
-      } else if (item.status === 4) {
-        item.status = '已关闭'
-      } else if (item.status === 5) {
-        item.status = '无效订单'
-      }
+      item.payType = payType[item.payType]
+      item.sourceType = sourceType[item.sourceType]
+      item.status = status[item.status]
       item.createTime = item.createTime.replace('T', ' ')
     })
   }
@@ -91,7 +84,7 @@ class Order {
     const orderListInfo = []
     list.forEach((item) => {
       const {
-        orderSn,
+        id,
         receiverName,
         receiverPhone,
         receiverPostCode,
@@ -102,7 +95,7 @@ class Order {
         deliverySn
       } = item
       const order = new WaitToDeliverOrder(
-        orderSn,
+        id,
         receiverName,
         receiverPhone,
         receiverPostCode,
@@ -118,6 +111,54 @@ class Order {
   }
 }
 
-const order = new Order()
+// ReturnApply 组件中数据的处理
+class ReturnApply {
+  // 订单列表数据处理
+  handleOrderList(orderList) {
+    const status = ['待处理', '退货中', '已完成', '已拒绝']
+    orderList.forEach((item) => {
+      item.status = status[item.status]
+      item.createTime = item.createTime.replace('T', ' ')
+      if (!item.handleTime) {
+        item.handleTime = 'N/A'
+      } else {
+        item.handleTime = item.handleTime.replace('T', ' ')
+      }
+      if (!item.returnAmount) item.returnAmount = 'N/A'
+    })
+  }
 
-export { orderTrack, formItemContent, operationTypes, order }
+  // 退货订单详情处理
+  handleReturnApplyOrder(order) {
+    Object.keys(order).forEach((key) => {
+      if (key === 'companyAddress') {
+        if (order[key]) {
+          order.address =
+            order.companyAddress.province +
+            order.companyAddress.city +
+            order.companyAddress.region
+        }
+      }
+      if (order[key] === null) {
+        order[key] = 'N/A'
+      }
+      if (key === 'proofPics') {
+        order[key] = order[key].split(',')
+      }
+    })
+    order.handleTime = order.handleTime.replace('T', ' ')
+    order.receiveTime = order.receiveTime.replace('T', ' ')
+  }
+}
+
+const order = new Order()
+const returnApply = new ReturnApply()
+
+export {
+  orderTrack,
+  orderFormItemContent,
+  orderOperationTypes,
+  order,
+  returnApply,
+  returnApplyFormItemContent
+}

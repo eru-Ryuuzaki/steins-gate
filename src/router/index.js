@@ -158,6 +158,15 @@ export const asyncRoutes = [
           title: '订单详情',
           noCache: true
         }
+      },
+      {
+        path: 'returnApplyDetail',
+        name: 'returnApplyDetail',
+        component: () => import('@/views/oms/ReturnApplyDetail.vue'),
+        meta: {
+          title: '退货详情',
+          noCache: true
+        }
       }
     ]
   },
