@@ -59,12 +59,7 @@
             <el-switch v-model="scope.row.showStatus"> </el-switch>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="sourceType"
-          label="相关"
-          width="120"
-          align="center"
-        >
+        <el-table-column prop="sourceType" label="相关" align="center">
           <template slot-scope="scope">
             <div>
               商品：{{ scope.row.productCount }} 评价：{{
@@ -87,6 +82,8 @@
       @batchOperation="handleBatchOperation"
       @pageSizeChange="getBrandList"
       @pageNumChange="getBrandList"
+      :total="brandTotal"
+      :operations="orderOperationTypes"
     />
   </div>
 </template>
@@ -116,7 +113,8 @@ export default {
         pageSize: 5
       },
       brandTotal: null,
-      brandTotalPage: null
+      brandTotalPage: null,
+      orderOperationTypes: ['显示品牌', '隐藏品牌']
     }
   },
   created() {
@@ -173,4 +171,14 @@ export default {
 }
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.box-card,
+.box-table {
+  margin: 20px;
+}
+.box-card {
+  i {
+    margin-right: 10px;
+  }
+}
+</style>
