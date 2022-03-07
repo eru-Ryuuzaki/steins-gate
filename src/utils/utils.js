@@ -2,7 +2,9 @@
 export function objectToQuery(object) {
   const result = []
   Object.keys(object).forEach((key) => {
-    if (object[key] || object[key] === 0) {
+    if (Array.isArray(object[key])) {
+      result.push(`${key}=${object[key].toString()}`)
+    } else if (object[key] || object[key] === 0) {
       result.push(`${key}=${object[key]}`)
     }
   })

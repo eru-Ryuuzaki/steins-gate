@@ -63,6 +63,7 @@ class Order {
   handleOrderList(orderList) {
     const payType = ['未支付', '支付宝', '微信']
     const sourceType = ['PC订单', 'app订单']
+    const orderType = ['正常订单', '秒杀订单']
     const status = [
       '待付款',
       '待发货',
@@ -71,12 +72,62 @@ class Order {
       '已关闭',
       '无效订单'
     ]
-    orderList.forEach((item) => {
-      item.payType = payType[item.payType]
-      item.sourceType = sourceType[item.sourceType]
-      item.status = status[item.status]
-      item.createTime = item.createTime.replace('T', ' ')
+    if (Array.isArray(orderList)) {
+      orderList.forEach((item) => {
+        item.payType = payType[item.payType]
+        item.sourceType = sourceType[item.sourceType]
+        item.orderType = orderType[item.orderType]
+        item.status = status[item.status]
+        item.createTime = item.createTime.replace('T', ' ')
+      })
+    } else {
+      orderList.payType = payType[orderList.payType]
+      orderList.sourceType = sourceType[orderList.sourceType]
+      orderList.orderType = orderType[orderList.orderType]
+      orderList.receiveTime = orderList.receiveTime.replace('T', ' ')
+    }
+  }
+
+  // 处理订单详情数据
+  handleOrderDetail(order) {
+    if (order.orderItemList === null) {
+      order.orderItemList = []
+    } else {
+      order.orderItemList.forEach((obj) => {
+        Object.keys(obj).forEach((key) => {
+          if (obj[key] === null || obj[key] === '') {
+            obj[key] = '暂无'
+          }
+        })
+      })
+    }
+    if (order.historyList === null) {
+      order.historyList = []
+    } else {
+      const status = [
+        '待付款',
+        '待发货',
+        '已发货',
+        '已完成',
+        '已关闭',
+        '无效订单'
+      ]
+      order.historyList.forEach((obj) => {
+        Object.keys(obj).forEach((key) => {
+          if (obj[key] === null || obj[key] === '') {
+            obj[key] = '暂无'
+          }
+        })
+        obj.orderStatus = status[obj.orderStatus]
+        obj.createTime = obj.createTime.replace('T', ' ')
+      })
+    }
+    Object.keys(order).forEach((key) => {
+      if (order[key] === null || order[key] === '') {
+        order[key] = '暂无'
+      }
     })
+    order.address = `${order.receiverProvince} ${order.receiverCity} ${order.receiverRegion} ${order.receiverDetailAddress}`
   }
 
   // 处理待发货的订单数据
@@ -120,27 +171,47 @@ class ReturnApply {
       item.status = status[item.status]
       item.createTime = item.createTime.replace('T', ' ')
       if (!item.handleTime) {
-        item.handleTime = 'N/A'
+        item.handleTime = 'null'
       } else {
         item.handleTime = item.handleTime.replace('T', ' ')
       }
-      if (!item.returnAmount) item.returnAmount = 'N/A'
+      if (!item.returnAmount) item.returnAmount = 'null'
     })
   }
 
   // 退货订单详情处理
   handleReturnApplyOrder(order) {
-    Object.keys(order).forEach((key) => {
-      if (key === 'companyAddress') {
-        if (order[key]) {
-          order.address =
-            order.companyAddress.province +
-            order.companyAddress.city +
-            order.companyAddress.region
+    if (order.companyAddress !== null) {
+      Object.keys(order.companyAddress).forEach((key) => {
+        if (order.companyAddress[key] === null) {
+          order.companyAddress[key] = 'null'
         }
+      })
+      order.address =
+        order.companyAddress.province +
+        order.companyAddress.city +
+        order.companyAddress.region
+    } else {
+      order.companyAddress = {
+        addressName: 'null',
+        city: 'null',
+        detailAddress: 'null',
+        id: 0,
+        name: 'null',
+        phone: 'null',
+        province: 'null',
+        receiveStatus: 0,
+        region: 'null',
+        sendStatus: 0
       }
+    }
+    Object.keys(order).forEach((key) => {
       if (order[key] === null) {
-        order[key] = 'N/A'
+        if (key === 'companyAddressId' || key === 'returnAmount') {
+          order[key] = 0
+        } else {
+          order[key] = 'null'
+        }
       }
       if (key === 'proofPics') {
         order[key] = order[key].split(',')

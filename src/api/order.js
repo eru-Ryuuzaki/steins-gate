@@ -11,7 +11,11 @@ function getOrderList(query) {
 function deleteOrder(ids) {
   return Promise.resolve(
     del({
-      url: `/mall-admin/order?ids=${ids}`
+      url: '/mall-admin/order',
+      params: {
+        ids: ids.toString()
+      },
+      contentType: 'application/x-www-form-urlencoded'
     })
   )
 }
@@ -19,25 +23,25 @@ function deleteOrder(ids) {
 function closeOrder(ids, note) {
   return Promise.resolve(
     put({
-      url: `/mall-admin/order/close?ids=${ids}&note=${note}`
+      url: `/mall-admin/order/close?ids=${ids.toString()}&note=${note}`
     })
   )
 }
 
-function deliverOrder(orders) {
+function deliverOrder(deliveryParamList) {
   return Promise.resolve(
     put({
       url: '/mall-admin/order/delivery',
       contentType: 'application/json',
-      deliveryParamList: orders
+      data: deliveryParamList
     })
   )
 }
 
-function orderDetail(orderId) {
+function orderDetail(id) {
   return Promise.resolve(
     get({
-      url: `/mall-admin/order/${orderId}`,
+      url: `/mall-admin/order/${id}`,
       contentType: 'application/x-www-form-urlencoded'
     })
   )
@@ -54,7 +58,7 @@ function getReturnApplyOrderList(query) {
 function deleteReturnApplyOrder(ids) {
   return Promise.resolve(
     del({
-      url: `/mall-admin/returnApply?ids=${ids}`
+      url: `/mall-admin/returnApply?ids=${ids.toString()}`
     })
   )
 }
@@ -72,7 +76,7 @@ function updateApplyStatus(id, statusParam) {
     put({
       url: `/mall-admin/returnApply/status/${id}`,
       contentType: 'application/json',
-      statusParam
+      data: statusParam
     })
   )
 }
@@ -90,9 +94,74 @@ function setReturnReason(returnReason) {
     post({
       url: '/mall-admin/returnReason',
       contentType: 'application/json',
-      data: {
-        returnReason
-      }
+      data: returnReason
+    })
+  )
+}
+
+function updateReturnStatus(query) {
+  return Promise.resolve(
+    put({
+      url: `/mall-admin/returnReason/status?${query}`,
+      contentType: 'application/x-www-form-urlencoded'
+    })
+  )
+}
+
+function updateReturnReason(id, returnReason) {
+  return Promise.resolve(
+    put({
+      url: `/mall-admin/returnReason/${id}`,
+      contentType: 'application/json',
+      data: returnReason
+    })
+  )
+}
+
+function getSingleReturnReason(id) {
+  return Promise.resolve(
+    get({
+      url: `/mall-admin/returnReason/${id}`,
+      contentType: 'application/x-www-form-urlencoded'
+    })
+  )
+}
+
+function deleteReturnReason(ids) {
+  return Promise.resolve(
+    del({
+      url: `/mall-admin/returnReason?ids=${ids.toString()}`,
+      contentType: 'application/x-www-form-urlencoded'
+    })
+  )
+}
+
+function updateReceiverInfo(receiverInfoParam) {
+  return Promise.resolve(
+    put({
+      url: '/mall-admin/order/receiverInfo',
+      contentType: 'application/json',
+      data: receiverInfoParam
+    })
+  )
+}
+
+function updateMoneyInfo(moneyInfoParam) {
+  return Promise.resolve(
+    put({
+      url: '/mall-admin/order/moneyInfo',
+      contentType: 'application/json',
+      data: moneyInfoParam
+    })
+  )
+}
+
+function remarksOrderInfo(query) {
+  return Promise.resolve(
+    put({
+      url: '/mall-admin/order/note',
+      contentType: 'application/x-www-form-urlencoded',
+      params: query
     })
   )
 }
@@ -108,5 +177,12 @@ export {
   getReturnApplyOrderDetail,
   updateApplyStatus,
   getReturnReasonOrderList,
-  setReturnReason
+  setReturnReason,
+  updateReturnReason,
+  updateReturnStatus,
+  getSingleReturnReason,
+  deleteReturnReason,
+  updateReceiverInfo,
+  updateMoneyInfo,
+  remarksOrderInfo
 }

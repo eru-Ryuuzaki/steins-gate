@@ -120,7 +120,7 @@ export default {
           })
         })
     },
-    deliver() {
+    async deliver() {
       const orderInfo = []
       this.orders.forEach((item) => {
         const order = {
@@ -130,14 +130,9 @@ export default {
         }
         orderInfo.push(order)
       })
-      // 发送请求报错
-      deliverOrder(orderInfo)
-        .then((res) => {
-          console.log(res)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+      console.log(orderInfo)
+      await deliverOrder(orderInfo)
+      this.$router.back()
     }
   }
 }

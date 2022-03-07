@@ -3,7 +3,7 @@
     <div v-if="!id">
       <el-card class="box-card">
         <el-row style="font-size: 16px; color: #303133; margin-bottom: 10px"
-          >修改一下路由</el-row
+          >暂无数据</el-row
         >
       </el-card>
     </div>
@@ -171,6 +171,7 @@
             </el-form>
           </el-row>
         </div>
+
         <div class="warp-div" v-if="orderDetail.status !== 3">
           <el-row>
             <el-form ref="form" :model="orderDetail" label-width="80px">
@@ -246,11 +247,7 @@
                 </el-col>
                 <el-col :span="18" class="col col-right">
                   <div class="data">
-                    {{
-                      orderDetail.companyAddress.detailAddress
-                        ? orderDetail.companyAddress.detailAddress
-                        : 'N/A'
-                    }}
+                    {{ orderDetail.companyAddress.detailAddress }}
                   </div>
                 </el-col>
               </el-row>
@@ -265,6 +262,7 @@
             </el-form>
           </el-row>
         </div>
+
         <div class="warp-div" v-if="orderDetail.status === 3">
           <el-row>
             <el-col :span="6" class="col">
@@ -292,6 +290,7 @@
             </el-form>
           </el-row>
         </div>
+
         <div class="warp-div" v-if="orderDetail.status !== 0">
           <el-row>
             <el-col :span="6" class="col">
@@ -318,6 +317,7 @@
             </el-col>
           </el-row>
         </div>
+
         <div class="warp-div" v-if="orderDetail.status === 0">
           <el-row>
             <el-form ref="form" :model="statusParam" label-width="80px">
@@ -336,6 +336,7 @@
             </el-form>
           </el-row>
         </div>
+
         <div class="warp-div" v-if="orderDetail.status === 1">
           <el-row>
             <el-form ref="form" :model="statusParam" label-width="80px">
@@ -354,6 +355,7 @@
             </el-form>
           </el-row>
         </div>
+
         <div class="warp-div" v-if="orderDetail.status === 2">
           <el-row>
             <el-col :span="6" class="col">
@@ -380,23 +382,24 @@
             </el-col>
           </el-row>
         </div>
+
         <div class="warp-div" style="text-align: center">
           <el-button
             type="primary"
             v-if="orderDetail.status === 0"
-            @click="handleClick"
+            @click="handleClick(1)"
             >确认退货</el-button
           >
           <el-button
             type="primary"
             v-if="orderDetail.status === 1"
-            @click="handleClick"
+            @click="handleClick(2)"
             >确认收货</el-button
           >
           <el-button
             type="danger"
             v-if="orderDetail.status === 0"
-            @click="handleClick"
+            @click="handleClick(3)"
             >拒绝退货</el-button
           >
         </div>
@@ -419,9 +422,7 @@ export default {
       refundAmount: '',
       statusParam: {
         companyAddressId: '',
-        handleMan: '',
         handleNote: '',
-        receiveMan: '',
         receiveNote: '',
         returnAmount: '',
         status: ''
@@ -434,24 +435,26 @@ export default {
   methods: {
     async getReturnApplyOrderDetailData() {
       this.orderDetail = await getReturnApplyOrderDetail(this.id)
+      returnApply.handleReturnApplyOrder(this.orderDetail)
       this.statusParam.companyAddressId = this.orderDetail.companyAddressId
-      this.statusParam.handleMan = this.orderDetail.handleMan
       this.statusParam.handleNote = this.orderDetail.handleNote
-      this.statusParam.receiveMan = this.orderDetail.receiveMan
       this.statusParam.receiveNote = this.orderDetail.receiveNote
       this.statusParam.returnAmount = this.orderDetail.returnAmount
       this.statusParam.status = this.orderDetail.status
-      returnApply.handleReturnApplyOrder(this.orderDetail)
     },
     // 发送请求有问题
-    async handleClick() {
-      console.log(this.statusParam)
+    async handleClick(status) {
+      this.statusParam.status = status
+      // console.log(this.orderDetail)
+      // console.log(this.statusParam)
+      // console.log(typeof this.statusParam.companyAddressId)
       this.$confirm('是否要进行该操作?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(async () => {
+          console.log(this.id, this.statusParam)
           await updateApplyStatus(this.id, this.statusParam)
           this.$router.back()
         })

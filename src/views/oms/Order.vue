@@ -120,16 +120,14 @@
         ></el-table-column>
         <el-table-column prop="status" label="操作" align="center" width="200">
           <template v-slot="scope">
-            <el-button
-              size="small"
-              @click="handleOrderDetail(scope.row.orderId)"
+            <el-button size="small" @click="handleOrderDetail(scope.row.id)"
               >查看订单</el-button
             >
             <el-button
               v-if="scope.row.status === '已关闭'"
               size="small"
               type="danger"
-              @click="open(scope.row.id)"
+              @click="open([scope.row.id])"
             >
               删除订单
             </el-button>
@@ -143,7 +141,7 @@
             <el-button
               v-else-if="scope.row.status === '待付款'"
               size="small"
-              @click="handleCloseSingleOrder(scope.row.id)"
+              @click="handleCloseSingleOrder([scope.row.id])"
             >
               关闭订单
             </el-button>
@@ -195,7 +193,7 @@
       </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeOrderVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleCloseOrderDialog"
+        <el-button type="primary" @click="handleCloseOrderDialog(selectOrder)"
           >确 定</el-button
         >
       </span>
@@ -289,7 +287,6 @@ export default {
             }
           })
         })
-
         this.waitToDeliver = order.handleWaitToDeliver(this.waitToDeliver)
         if (this.selectOrder.length === 0) {
           this.warnMessage()
@@ -331,14 +328,15 @@ export default {
       this.formParams.pageNum = pageNum
       this.getOrderListData()
     },
-    open(id) {
+    open(ids) {
       this.$confirm('是否要进行该删除操作?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(async () => {
-          await deleteOrder([id])
+          console.log(ids)
+          await deleteOrder(ids)
           await this.getOrderListData()
         })
         .catch(() => {
@@ -363,12 +361,8 @@ export default {
         }
       })
     },
-    async handleCloseOrderDialog(id) {
-      if (id) {
-        await closeOrder([id], this.note)
-      } else {
-        await closeOrder(this.selectOrder, this.note)
-      }
+    async handleCloseOrderDialog(ids) {
+      await closeOrder(ids, this.note)
       this.closeOrderVisible = false
       await this.getOrderListData()
     },
@@ -376,10 +370,10 @@ export default {
       this.closeOrderVisible = true
       this.handleCloseOrderDialog(id)
     },
-    handleOrderDetail(orderId) {
+    handleOrderDetail(id) {
       this.$router.push({
         path: 'OrderDetail',
-        query: { orderId }
+        query: { id }
       })
     },
     warnMessage() {
