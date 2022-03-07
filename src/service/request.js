@@ -4,6 +4,9 @@ import { Message, Loading } from 'element-ui'
 import store from '../store/index'
 import router from '../router'
 
+// 记录 refreshTokenStatus 状态
+let refreshTokenStatus = 1
+
 // 创建基本请求
 function createHttp(options) {
   // 为啥没配置 withCredentials 也跨域了。还是理解错了
@@ -75,19 +78,19 @@ function createHttp(options) {
         // 应该清空用户状态（token之类的）
         // console.log('过期信息', res)
         const refreshToken = localStorage.getItem('refreshToken')
-        store.commit('login/removeUserInfo')
 
         // 保存要去的路径，方便重定向
         const fullPath = window.location.pathname
 
         // 请求失败就进入 catch
         try {
-          if (refreshToken) {
+          if (refreshTokenStatus) {
+            refreshTokenStatus = 0
             await store.dispatch('login/getNewToken', refreshToken)
-            await store.dispatch('login/getUserInfo')
+            // await store.dispatch('login/getUserInfo')
             // 刷新路由，保持原本的操作
             // 这样获取路由不知道符不符合规范
-
+            refreshTokenStatus = 1
             router.replace({
               path: '/redirect' + fullPath
             })
@@ -96,6 +99,7 @@ function createHttp(options) {
           console.log('身份过期')
           throw Error('refreshToken 失效')
         } catch {
+          store.commit('login/removeUserInfo')
           console.log('身份过期')
           Message({
             message: '身份过期，请重新登录',

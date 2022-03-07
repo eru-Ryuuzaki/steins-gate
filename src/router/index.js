@@ -302,7 +302,7 @@ router.beforeEach(async (to, from, next) => {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           const roles = await store.dispatch('login/getUserInfo')
-
+          console.log('重新获取动态路由')
           // console.log('准备动态添加路由啦', roles)
           // 把这个角色拥有的路由权限加上去
           const accessRoutes = await store.dispatch(
