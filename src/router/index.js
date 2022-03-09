@@ -218,6 +218,18 @@ export const asyncRoutes = [
         name: 'homeAdvertise',
         component: () => import('@/views/sms/HomeAdvertise.vue'),
         meta: { title: '广告列表', icon: 'sms-ad', noCache: true }
+      },
+      {
+        path: 'flashSession',
+        name: 'flashSession',
+        component: () => import('@/views/sms/FlashSession.vue'),
+        meta: { title: '秒杀时间段列表', icon: 'sms-ad', noCache: true }
+      },
+      {
+        path: 'selectSession',
+        name: 'selectSession',
+        component: () => import('@/views/sms/SelectSession.vue'),
+        meta: { title: '秒杀时间段选择', icon: 'sms-ad', noCache: true }
       }
     ]
   },

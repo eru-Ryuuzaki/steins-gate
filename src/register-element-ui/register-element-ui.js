@@ -36,7 +36,10 @@ import {
   Message,
   Steps,
   Step,
-  Dialog
+  Dialog,
+  Radio,
+  RadioGroup,
+  TimePicker
 } from 'element-ui'
 import ElScrollbar from 'element-ui/lib/scrollbar'
 import Vue from 'vue'
@@ -77,7 +80,10 @@ const components = [
   DatePicker,
   Steps,
   Step,
-  Dialog
+  Dialog,
+  Radio,
+  RadioGroup,
+  TimePicker
 ]
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$message = Message
